@@ -13,6 +13,9 @@ extern "C" {
 	void getKey( CCapability* item,long long int *k){
 		(exampleFun2 *)item->getKey( k );
 	}
+	void destroy( CCapability* item ) {
+		(exampleFun2 *)item->destroy();
+	}
 };	
 
 
@@ -25,6 +28,11 @@ int exampleFun2::getKey( long long int *k ) {
 
 int exampleFun2::run( void *argv ) {
 	printf("I am 2\n");
+	return 1;
+}
+
+int exampleFun2::destroy( ) {
+	delete this;
 	return 1;
 }
 

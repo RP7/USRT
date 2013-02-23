@@ -10,4 +10,7 @@ work/libfun2.so:examples/fun2.cpp
 	
 work/libfun3.so:examples/fun3.cpp
 	g++ -I${INC} -shared -o work/libfun3.so examples/fun3.cpp
-	
+
+clean:
+	rm work/*
+		

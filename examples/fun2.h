@@ -5,6 +5,7 @@ class exampleFun2 : CCapability {
 	public:
 		int getKey( long long int *k );
 		int run( void *argv );
+		int destroy();
 };	
 
 
