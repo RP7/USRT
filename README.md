@@ -1,4 +1,4 @@
-# *** USRT ***
+# USRT user space real time architecture
 * Mixed physical and cpu timing reference
 * User space coding with Cgroup
 * Non-preemptive user defined schedule
