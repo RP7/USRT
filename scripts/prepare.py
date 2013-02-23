@@ -22,7 +22,8 @@ worker3 = { 'capabilities':['libfun2.so','libfun3.so'], 'tag':md5key('3') }
 
 main = { 'tag':mainkey, 'workers':[ worker1, worker2, worker3 ] }
 
-fd.write( json.dumps( main ) )
+fd.write( json.dumps( main, indent=2, separators=(',', ': ')))
+fd.write('\n')
 fd.close()
 
 

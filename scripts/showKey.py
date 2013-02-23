@@ -8,4 +8,4 @@ key = (c_longlong *2)()
 item = dll.newFun()
 dll.getKey(item,byref(key))
 print '%016x%016x' % (key[1],key[0])
-          
+         
