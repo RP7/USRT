@@ -1,4 +1,5 @@
 INC=include
+PINC=/usr/include/python2.7
 
 example1:work/libfun1.so work/libfun2.so work/libfun3.so
 
@@ -13,4 +14,6 @@ work/libfun3.so:examples/fun3.cpp
 
 clean:
 	rm work/*
-		
+
+
+	 		

@@ -17,10 +17,13 @@ extern "C" {
 	void destroy( CCapability* item ) {
 		(exampleFun1 *)item->destroy();
 	}
+	long long int md2_5() {
+		return 0x1318bb259d65ee19LL;
+	}
 };	
 
 
-long long int exampleFun1::key[] = {0x1318bb259d65ee19LL,0x7e95373c35421368LL};
+long long int exampleFun1::key[] = {md2_5(),0x7e95373c35421368LL};
 int exampleFun1::getKey( long long int *k ) {
 	k[0]=key[0];
 	k[1]=key[1];
