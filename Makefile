@@ -22,4 +22,8 @@ CONTAINERSRC = usrt/container/task.c \
 								usrt/container/globe.c
 work/libcontainer.so: ${CONTAINERSRC}
 	g++ -I${INC} -shared -o work/libcontainer.so ${CONTAINERSRC}
-	 		
+
+LTEDownExample:work/ltetest
+work/ltetest: examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c
+	g++ -I${INC} -Lwork -lcontainer -o work/ltetest examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c
+		 		
