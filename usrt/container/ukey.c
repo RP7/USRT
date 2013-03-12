@@ -1,4 +1,6 @@
 #include <usrttype.h>
+#include <string.h>
+#include <assert.h>
 
 int64 key2int( ukey_t *key )
 {

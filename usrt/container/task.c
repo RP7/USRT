@@ -2,6 +2,8 @@
 #include <ukey.h>
 #include <usrttime.h>
 #include <usrtmem.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 short newSession()
 {

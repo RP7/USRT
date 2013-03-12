@@ -1,5 +1,6 @@
 #include <usrttype.h>
-extern struct structGlobe globe;
+#include <stdlib.h>
+
 
 void initMem()
 {

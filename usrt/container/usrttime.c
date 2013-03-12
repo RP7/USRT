@@ -1,25 +1,26 @@
 #include <usrttype.h>
+#include <sys/time.h>
 
-time_t getHardware()
+utime_t getHardware()
 {
 	return 1;	
 }
 
-time_t getSubFrameDuration()
+utime_t getSubFrameDuration()
 {
 	return 1000;	
 }
-time_t getNow()
+utime_t getNow()
 {
 	struct timeval tv;
 	gettimeofday(&tv,0);
-	time_t now = (time_t)tv.tv_sec*1000000;
-	now += (time_t)tv.tv_usec;
+	utime_t now = (utime_t)tv.tv_sec*1000000;
+	now += (utime_t)tv.tv_usec;
 	return now;
 }
-time_t getFrameTiming(int frame, int subframe )
+utime_t getFrameTiming(int frame, int subframe )
 {
-	time_t timing = getNow();
-	timing += (time_t)frame*10000+(time_t)subframe*1000;
+	utime_t timing = getNow();
+	timing += (utime_t)frame*10000+(utime_t)subframe*1000;
 	return timing;	
 }

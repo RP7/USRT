@@ -1,13 +1,15 @@
+#ifndef __USRTTYPE_H
+#define __USRTTYPE_H
 typedef long long int64;
-typedef long long time_t;
+typedef long long utime_t;
 typedef struct structTask {
 	int64 ID;
 	int64 key;
 	int64 from;
 	int64 to;
-	time_t noE;
-	time_t noL;
-	time_t valid;
+	utime_t noE;
+	utime_t noL;
+	utime_t valid;
 	void *argv;
 	int lock;
 } task_t;
@@ -27,3 +29,9 @@ struct structGlobe {
 	void *mem;
 	task_t **stack;
 };
+
+extern struct structGlobe globe;
+#define VHEAPSIZE 65536
+#define STACKSIZE 256
+
+#endif

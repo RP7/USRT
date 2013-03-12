@@ -15,5 +15,11 @@ work/libfun3.so:examples/fun3.cpp
 clean:
 	rm work/*
 
-
+CONTAINERSRC = usrt/container/task.c \
+								usrt/container/ukey.c \
+								usrt/container/usrttime.c \
+								usrt/container/usrtmem.c \
+								usrt/container/globe.c
+work/libcontainer.so: ${CONTAINERSRC}
+	g++ -I${INC} -shared -o work/libcontainer.so ${CONTAINERSRC}
 	 		
