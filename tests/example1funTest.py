@@ -28,7 +28,7 @@ def run(obj,argv):
 libs = ['libfun1.so','libfun2.so','libfun3.so']
 pythons = [{'module':'usrt','class':'dummycapability'}]
 modules = loadModules( libs, sys.argv[1] )
-argv = (c_longlong*2)(0x3031323334353637,0x3031323334353637)
+argv = (c_int*2)(0,0)
 print modules
 for key, m in modules.items():
 	m['obj'].run(m['item'],byref(argv))
@@ -38,12 +38,35 @@ sys.path.append(path.abspath('.'))
 import usrt.worker
 import usrt.dummycapability
 
-modules2 = loadModules( libs, sys.argv[1] )
-for key, m in modules2.items():
-	run(m,byref(argv))
 
+
+class task(Structure):
+  _fields_ = [
+    ("ID",c_longlong),
+    ("ufrom",c_longlong),
+    ("to",c_longlong),
+    ("noE",c_longlong),
+    ("noL",c_longlong),
+    ("valid",c_longlong),
+    ("argv",c_void_p),
+    ("lock",c_int),
+    ]
 argvs = {'libs':libs,'dir':sys.argv[1],'pythons':pythons} 
 worker1 = usrt.worker.worker( argvs)
 for key, v in worker1.items():
 	m = worker1.getModule(key)
-	worker1.run(m,byref(argv))	
+	worker1.run(m,byref(argv))
+print "-------------------------------"
+
+modules2 = loadModules( libs, sys.argv[1] )
+for key, m in modules2.items():
+	run(m,byref(argv))
+for key, m in modules2.items():
+	run(m,byref(argv))
+ap = POINTER(task)()
+dll = CDLL(path.join(sys.argv[1],"libcontainerapi.so"))
+k=0;
+while	dll.readTask(byref(ap))==0:
+  print k 
+  print ap.contents.ID
+  k+=1

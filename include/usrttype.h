@@ -20,18 +20,20 @@ typedef struct structKey {
 	short session;
 } ukey_t;
 
+#define VHEAPSIZE 65536
+#define STACKSIZE 256
+
 struct structGlobe {
 	short snE;
 	short snV;
 	int brk;
 	int sp;
 	int bp;
-	void *mem;
-	task_t **stack;
+	int rp;
+	char mem[VHEAPSIZE];
+	task_t *stack[STACKSIZE];
 };
 
 extern struct structGlobe globe;
-#define VHEAPSIZE 65536
-#define STACKSIZE 256
 
 #endif

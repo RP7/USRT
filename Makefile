@@ -3,8 +3,8 @@ PINC=/usr/include/python2.7
 
 example1:work/libfun1.so work/libfun2.so work/libfun3.so
 
-work/libfun1.so:examples/fun1.cpp
-	g++ -I${INC} -shared -o work/libfun1.so examples/fun1.cpp
+work/libfun1.so:examples/fun1.cpp work/libcontainer.so
+	g++ -I${INC} -shared -Lwork -lcontainer -o work/libfun1.so examples/fun1.cpp examples/LTEDownLinkTransMock.c
 	
 work/libfun2.so:examples/fun2.cpp
 	g++ -I${INC} -shared -o work/libfun2.so examples/fun2.cpp
@@ -26,4 +26,6 @@ work/libcontainer.so: ${CONTAINERSRC}
 LTEDownExample:work/ltetest 
 work/ltetest: examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c work/libcontainer.so
 	g++ -I${INC} -Lwork -lcontainer -o work/ltetest examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c
-		 		
+
+work/libcontainerapi.so :	usrt/containerAPI.c work/libcontainer.so
+	g++ -shared -I${INC} -Lwork -lcontainer -o work/libcontainerapi.so usrt/containerAPI.c

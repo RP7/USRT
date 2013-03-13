@@ -20,17 +20,34 @@ void holdSp()
 {
 	globe.bp=globe.sp;	
 }
-void releasSp()
+void releaseSp()
 {
 	globe.sp = globe.bp;
 }
-void push( task_t * task )
+void pushTask( task_t * task )
 {
 	globe.stack[globe.bp]=task;
 	globe.bp++;
 	if( globe.bp>=STACKSIZE )
 		globe.bp = 0;
 }
+
+int getTask( task_t* &ret )
+{
+	ret = NULL;
+	if( globe.rp!=globe.sp )
+	{
+		ret = globe.stack[globe.rp];
+		printf("%d, %p\n",globe.rp,ret);
+		globe.rp++;
+		if( globe.rp>=STACKSIZE )
+			globe.rp = 0;
+		return 0;
+	}
+	else
+		return -1;
+}
+
 void *buildTask( task_t *task, int64 start,int64 key,void *ar, double noE,double noL,double valid)
 {
 	task->from = start;
