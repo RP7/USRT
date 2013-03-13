@@ -12,7 +12,7 @@
 
 #include"LTEDownLinkTransMock.h"
 
-#define UENum 10
+#define UENum 5
 
 
 int main( int argc, char *argv[] )
@@ -25,9 +25,9 @@ int main( int argc, char *argv[] )
 	sscanf(argv[1],"%d",&frame);
 	sscanf(argv[2],"%d",&subframe);
 	holdSp();
-	double valid = getFrameTiming(frame,subframe);
-	double noL = valid-getHardware();
-	double noE = valid-getSubFrameDuration();
+	utime_t valid = getFrameTiming(frame,subframe);
+	utime_t noL = valid-getHardware();
+	utime_t noE = valid-getSubFrameDuration();
 	int64 beforeFFT = newV( "bFF",session );
 	void *ar;
 	int64 key;

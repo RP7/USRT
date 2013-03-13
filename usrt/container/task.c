@@ -45,10 +45,13 @@ void setTaskTo( task_t *task, int64 to )
 	task->to = to;	
 }
 void dump( task_t *task ) {
-	printf("\"%s(%d)\"->\"%s(%d)\";\n",nameOfKey(&(task->from))
+	printf("\"%s(%d)\"->\"%s(%d)\" [label=\"%s(%d)\"];\n"
+		,nameOfKey(&(task->from))
 		,snOfKey(&(task->from))
 		,nameOfKey(&(task->to))
 		,snOfKey(&(task->to))
+		,nameOfKey(&(task->ID))
+		,snOfKey(&(task->ID))
 		);
 }
 void printStack()
