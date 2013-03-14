@@ -18,7 +18,10 @@ def init( config ):
 	globeDict=json.loads(fd.read())
 	mutex = threading.Lock()
 	globeDict.update({'mutex':mutex})
-
+	earlyQ=Queue.PriorityQueue(0)
+	globeDict.update({'early':earlyQ})
+	globeDict.update({'vertexes':{}})
+	
 	for k,v in globeDict['workers'].items():
 		q=Queue.PriorityQueue(0)
 		v.update({'queue':q})
