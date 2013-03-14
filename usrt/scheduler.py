@@ -4,6 +4,7 @@ from os import path
 class Task(Structure):
   _fields_ = [
     ("ID",c_longlong),
+    ("key",c_longlong*2),
     ("ufrom",c_longlong),
     ("to",c_longlong),
     ("noE",c_longlong),
