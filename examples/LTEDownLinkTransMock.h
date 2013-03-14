@@ -4,11 +4,11 @@ void *buildPssAntMap();
 void *buildUeDownCoding(int i);
 void *buildUeDownMod(int i);
 void *buildUeDownAntMap(int i);
-int64 keyPss();
-int64 keyPssAntMap();
-int64 keyUeDownCoding();
-int64 keyUeDownMod();
-int64 keyUeDownAntMap();
+void keyPss(int64 key[2]);
+void keyPssAntMap(int64 key[2]);
+void keyUeDownCoding(int64 key[2]);
+void keyUeDownMod(int64 key[2]);
+void keyUeDownAntMap(int64 key[2]);
 #include <usrttype.h>
 
 utime_t getHardware();

@@ -37,12 +37,21 @@ for key, m in modules.items():
 sys.path.append(path.abspath('.'))
 import usrt.worker
 import usrt.dummycapability
-
-
-
+"""
+	int64 ID;
+	int64 key[2];
+	int64 from;
+	int64 to;
+	utime_t noE;
+	utime_t noL;
+	utime_t valid;
+	void *argv;
+	int lock;
+"""
 class task(Structure):
   _fields_ = [
     ("ID",c_longlong),
+    ("key",c_longlong*2),
     ("ufrom",c_longlong),
     ("to",c_longlong),
     ("noE",c_longlong),
@@ -51,12 +60,23 @@ class task(Structure):
     ("argv",c_void_p),
     ("lock",c_int),
     ]
-argvs = {'libs':libs,'dir':sys.argv[1],'pythons':pythons} 
-worker1 = usrt.worker.worker( argvs)
+argvs = {'libs':libs,'dir':sys.argv[1],'pythons':pythons,"capabilities":[],"queue":"","tag":"worker1"} 
+worker1 = usrt.worker.worker( {"workers":{"worker1":argvs},"tasks":{},"mutex":""}, "worker1" )
 for key, v in worker1.items():
 	m = worker1.getModule(key)
-	worker1.run(m,byref(argv))
+	worker1._run(m,byref(argv))
 print "-------------------------------"
+
+def mygetattr(struct, field):
+	k=getattr(struct, field)
+	if field=="key":
+		return '%016x%016x' % (k[1],k[0])
+	else:
+		return k
+		
+def getdict(struct):
+    return dict((field, mygetattr(struct, field)) for field, _ in struct._fields_)
+
 
 modules2 = loadModules( libs, sys.argv[1] )
 for key, m in modules2.items():
@@ -68,5 +88,5 @@ dll = CDLL(path.join(sys.argv[1],"libcontainerapi.so"))
 k=0;
 while	dll.readTask(byref(ap))==0:
   print k 
-  print ap.contents.ID
+  print getdict(ap.contents)
   k+=1

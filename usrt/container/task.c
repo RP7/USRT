@@ -57,10 +57,14 @@ int getTask( task_t* &ret )
 	return r;
 }
 
-void *buildTask( task_t *task, int64 start,int64 key,void *ar, double noE,double noL,double valid)
+int64* getTaskKey( task_t *task )
+{
+	return task->key;
+}
+
+void buildTask( task_t *task, int64 start,void *ar, double noE,double noL,double valid)
 {
 	task->from = start;
-	task->key	= key;
 	task->argv = ar;
 	task->noE = noE;
 	task->noL = noL;

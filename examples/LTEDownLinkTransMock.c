@@ -26,25 +26,30 @@ void *buildUeDownAntMap(int i)
 {
 	return dummyArgv();
 }
-int64 keyPss()
+void keyPss(int64 key[2])
 {
-	return 1;	
+	key[1]=0x7e95373c35421368LL;
+	key[0]=0x1LL;
 }
-int64 keyPssAntMap()
+void keyPssAntMap(int64 key[2])
 {
-	return 2;	
+	key[1]=0x7e95373c35421368LL;
+	key[0]=0x2LL;
 }
-int64 keyUeDownCoding()
+void keyUeDownCoding(int64 key[2])
 {
-	return 3;	
+	key[1]=0x7e95373c35421368LL;
+	key[0]=0x3LL;
 }
-int64 keyUeDownMod()
+void keyUeDownMod(int64 key[2])
 {
-	return 4;	
+	key[1]=0x7e95373c35421368LL;
+	key[0]=0x4LL;
 }
-int64 keyUeDownAntMap()
+void keyUeDownAntMap(int64 key[2])
 {
-	return 5;	
+	key[1]=0x7e95373c35421368LL;
+	key[0]=0x5LL;
 }
 
 #include <sys/time.h>
