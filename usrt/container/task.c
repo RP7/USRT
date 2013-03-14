@@ -1,9 +1,11 @@
 #include <usrttype.h>
 #include <ukey.h>
-#include <usrttime.h>
 #include <usrtmem.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+
+
 
 short newSession()
 {
@@ -18,34 +20,41 @@ task_t *allocTask(int64 ID)
 }
 void holdSp()
 {
+  __raw_spin_lock(&(globe.lock));
 	globe.bp=globe.sp;	
+	__raw_spin_unlock(&(globe.lock));	
 }
 void releaseSp()
 {
+  __raw_spin_lock(&(globe.lock));
 	globe.sp = globe.bp;
+	__raw_spin_unlock(&(globe.lock));	
 }
 void pushTask( task_t * task )
 {
+  __raw_spin_lock(&(globe.lock));
 	globe.stack[globe.bp]=task;
 	globe.bp++;
 	if( globe.bp>=STACKSIZE )
 		globe.bp = 0;
+	__raw_spin_unlock(&(globe.lock));	
 }
 
 int getTask( task_t* &ret )
 {
 	ret = NULL;
+	int r=-1;
+  __raw_spin_lock(&(globe.lock));
 	if( globe.rp!=globe.sp )
 	{
 		ret = globe.stack[globe.rp];
-		printf("%d, %p\n",globe.rp,ret);
 		globe.rp++;
 		if( globe.rp>=STACKSIZE )
 			globe.rp = 0;
-		return 0;
+		r=0;
 	}
-	else
-		return -1;
+	__raw_spin_unlock(&(globe.lock));	
+	return r;
 }
 
 void *buildTask( task_t *task, int64 start,int64 key,void *ar, double noE,double noL,double valid)

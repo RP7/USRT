@@ -17,7 +17,6 @@ clean:
 
 CONTAINERSRC = usrt/container/task.c \
 								usrt/container/ukey.c \
-								usrt/container/usrttime.c \
 								usrt/container/usrtmem.c \
 								usrt/container/globe.c
 work/libcontainer.so: ${CONTAINERSRC}
