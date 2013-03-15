@@ -50,7 +50,6 @@ int exampleFun1::run( void *argv ) {
   int *iargv = (int *)argv;
 	frame=iargv[1];
 	subframe=iargv[2];
-	holdSp();
 	utime_t valid = getFrameTiming(frame,subframe);
 	utime_t noL = valid-getHardware();
 	utime_t noE = valid-getSubFrameDuration();
@@ -95,7 +94,6 @@ int exampleFun1::run( void *argv ) {
 		setTaskTo( task, beforeFFT );
 		pushTask( task );
 	}
-	printStack();
 	releaseSp();
 	return 1;
 }

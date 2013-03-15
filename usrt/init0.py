@@ -8,7 +8,7 @@ sys.path.append(path.abspath('.'))
 import usrt.worker
 import usrt.dummycapability
 import usrt.scheduler
-
+import usrt.logger
 workers=[]
 globeDict={}
 
@@ -21,7 +21,7 @@ def init( config ):
 	earlyQ=Queue.PriorityQueue(0)
 	globeDict.update({'early':earlyQ})
 	globeDict.update({'vertexes':{}})
-	
+
 	for k,v in globeDict['workers'].items():
 		q=Queue.PriorityQueue(0)
 		v.update({'queue':q})
@@ -40,6 +40,9 @@ if __name__ =="__main__":
 	task={'ID':'1' ,'key':'a449428a47383acfd816603b55c3cfa7','argv':globeDict }
 	testPushTask(globeDict,task) 
 	task={'ID':'2' ,'key':'7e95373c354213681318bb259d65ee19','argv':byref(argv) }
-	testPushTask(globeDict,task) 
-	
+	testPushTask(globeDict,task)
+	logQ=usrt.logger.logQ 
+	while True:
+		time,level,str=logQ.get()
+		print "[%s]%lf:%s" %(level,time,str)
 		

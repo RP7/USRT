@@ -1,6 +1,7 @@
 from ctypes import *  
 from os import path
 import time
+from usrt.logger import log
 
 class Task(Structure):
   _fields_ = [
@@ -74,7 +75,7 @@ class Scheduler:
 		_,id = q.get()
 		while id!='1':
 			task=argv['tasks'][id]
-			print "task"+task['key']+"is ready"
+			log("info", "task "+task['key']+" is ready")
 			for k,v in argv['workers'].items():
 				if task['key'] in v['capabilities']:
 					self._pushToWorker(v,task)
