@@ -6,7 +6,7 @@ from usrt.logger import log,md5key
 class Task(Structure):
   _fields_ = [
     ("ID",c_longlong),
-    ("key",c_longlong*2),
+    ("key",c_ulonglong*2),
     ("ufrom",c_longlong),
     ("to",c_longlong),
     ("noE",c_longlong),
@@ -80,7 +80,7 @@ class Scheduler:
 				if task['key'] in v['capabilities']:
 					self._pushToWorker(v,task)
 			_,id = q.get()
-		task={'ID':'1' ,'key':'a449428a47383acfd816603b55c3cfa7','argv':argv,'noL':now+1000 }
+		task={'ID':'1' ,'key':md5key('usrt.scheduler'),'argv':argv,'noL':now+1000 }
 		self._pushTaskNoWait(argv,task) 
 
 			
