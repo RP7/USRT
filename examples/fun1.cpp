@@ -35,7 +35,7 @@ int exampleFun1::run( void *argv ) {
 	if( subframe==0 ) {
 		ar = buildPss();
 		task = allocTask( newE("PsM",session) ); 
-		keyPss(getTaskKey(task));
+		md5key(getTaskKey(task),"capPssMod");
 		buildTask(task,start,ar,noE,noL,valid);
 		int64 afterPssMod = newV("APM",session);
 		setTaskTo( task, afterPssMod );

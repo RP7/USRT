@@ -2,6 +2,7 @@ from ctypes import *
 from os import path
 import time
 from usrt.logger import log,md5key
+import Queue
 
 class Task(Structure):
   _fields_ = [
@@ -63,9 +64,16 @@ class Scheduler:
 		while	self._dll.readTask(byref(ap))==0:
 			task=self._getdict(ap.contents)
 			self._buildVertex(vertexes,task)
+		overQ=argv['overQ']
+		while overQ.empty()==False:
+			overTask=overQ.get()
+			error = str(overTask)
+			log("Error",error)
+			vertexes[overTask['to']]['dep']-=1
 			
 		for k,v in vertexes.items():
 			if v['dep']==0:
+				log("info","vertex "+str(k)+" is reached")
 				for l in range(0,len(v['tasks'])):
 					self._pushTask(argv,v['tasks'][l])
 				del vertexes[k]

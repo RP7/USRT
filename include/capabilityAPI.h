@@ -1,5 +1,6 @@
 #ifdef FUNCLASS
-#include<capability.h>
+#include <usrttype.h>
+#include <capability.h>
 #include <md5api.h>
 
 class FUNCLASS : CCapability {

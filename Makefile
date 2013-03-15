@@ -1,10 +1,14 @@
 INC=include
 PINC=/usr/include/python2.7
 FLAG=-fPIC -fpermissive
-example1:work/libfun1.so work/libfun2.so work/libfun3.so work/libcontainerapi.so work/libmd5api.so
+example1:work/libfun1.so work/libfun2.so work/libfun3.so work/libcontainerapi.so work/libmd5api.so work/libPssMod.so
 
 work/libfun1.so:examples/fun1.cpp work/libcontainer.so examples/LTEDownLinkTransMock.c work/libmd5api.so
 	g++ -I${INC} ${FLAG} -shared -Lwork -lcontainer -lmd5api -o work/libfun1.so examples/fun1.cpp examples/LTEDownLinkTransMock.c work/libmd5api.so work/libcontainer.so
+
+work/libPssMod.so:examples/capPssMod.cpp work/libmd5api.so
+	g++ -I${INC} ${FLAG} -shared -Lwork -lmd5api -o work/libPssMod.so examples/capPssMod.cpp work/libmd5api.so
+
 	
 work/libfun2.so:examples/fun2.cpp work/libmd5api.so
 	g++ -I${INC} ${FLAG} -shared -o work/libfun2.so examples/fun2.cpp work/libmd5api.so work/libcontainer.so

@@ -21,7 +21,9 @@ def init( config ):
 	earlyQ=Queue.PriorityQueue(0)
 	globeDict.update({'early':earlyQ})
 	globeDict.update({'vertexes':{}})
-
+	overQ=Queue.Queue(0)
+	globeDict.update({'overQ':overQ})
+	
 	for k,v in globeDict['workers'].items():
 		q=Queue.PriorityQueue(0)
 		v.update({'queue':q})

@@ -21,7 +21,7 @@ dummy={'module':'usrt','class':'dummycapability'}
 scheduler={'module':'usrt','class':'scheduler'}
 worker1 = { 'dir':workingDir,'libs':['libfun1.so','libfun2.so'], 'tag':md5key('1'),'pythons':[dummy,scheduler] }
 worker2 = { 'dir':workingDir,'libs':['libfun1.so','libfun3.so'], 'tag':md5key('2'),'pythons':[] }
-worker3 = { 'dir':workingDir,'libs':['libfun2.so','libfun3.so'], 'tag':md5key('3'),'pythons':[] }
+worker3 = { 'dir':workingDir,'libs':['libfun2.so','libfun3.so','libPssMod.so'], 'tag':md5key('3'),'pythons':[] }
 
 main = { 'tag':mainkey, 'workers':{ worker1['tag']:worker1, worker2['tag']:worker2, worker3['tag']:worker3 }, 'tasks':{} }
 for k,v in main['workers'].items():

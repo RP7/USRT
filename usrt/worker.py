@@ -12,8 +12,9 @@ class Worker(threading.Thread):
 		self._loadPythons( argv['pythons'] )
 		for k,v in self._modules.items():
 			argvs['workers'][whoamI]['capabilities'].append(k)
-		self._jobq = argvs['workers'][whoamI]['queue']
+		self._jobq = argv['queue']
 		self._globeTask = argvs['tasks']
+		self._overQ = argvs['overQ']
 		self._mutex = argvs['mutex']
 		threading.Thread.__init__(self,name=argv['tag'])
 		
@@ -72,6 +73,8 @@ class Worker(threading.Thread):
 				self._mutex.release()
 			if item!={}:
 				self._run(self._modules[item['key']],item['argv'])
+				if 'to' in item:
+					self._overQ.put(item)
 			
 def worker( argv, k ):
 	return Worker( argv, k )
