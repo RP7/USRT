@@ -1,6 +1,7 @@
 from ctypes import *  
 from os import path
 import threading
+from usrt.logger import log
 
 class Worker(threading.Thread):
 
@@ -17,7 +18,7 @@ class Worker(threading.Thread):
 		threading.Thread.__init__(self,name=argv['tag'])
 		
 	def getKey( self,obj ):
-		key = (c_longlong*2)()
+		key = (c_ulonglong*2)()
 		if( obj.has_key('item') ):
 			obj['obj'].getKey(obj['item'],byref(key))
 			ret = '%016x%016x' % (key[1],key[0])
@@ -31,6 +32,7 @@ class Worker(threading.Thread):
 			obj = {}
 			obj = {'obj':dll,'item':dll.newFun()}
 			self._modules[self.getKey(obj)] = obj
+			log("info","load :"+x+"("+self.getKey(obj)+")")
 			
 	def _loadPythons( self,libs ):	
 		for x in libs:
@@ -38,6 +40,7 @@ class Worker(threading.Thread):
 			obj = {}
 			obj = {'obj':m.__dict__[x['class']].newFun()}
 			self._modules[self.getKey(obj)] = obj
+			log("info","load :"+x['class']+"("+self.getKey(obj)+")")
 			
 	def destroy( self,obj ):
 		if( obj.has_key('item') ):

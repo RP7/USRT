@@ -1,7 +1,6 @@
 #include<capability.h>
 #include<stdio.h>
 #include<string.h>
-#include "fun1.h"
 #include <stdlib.h>
 #include <sys/time.h>
 #include <usrttype.h>
@@ -10,37 +9,13 @@
 #include <task.h>
 #include <ukey.h>
 
-
 #include"LTEDownLinkTransMock.h"
 
 #define UENum 5
 
-extern "C" {
-	CCapability *newFun() {
-		exampleFun1 *item = new exampleFun1();
-		return (CCapability*)item;
-	}
-	void run( CCapability* item, void *argv ) {
-		(exampleFun1 *)item->run( argv );
-	}
-	void getKey( CCapability* item,long long int *k){
-		(exampleFun1 *)item->getKey( k );
-	}
-	void destroy( CCapability* item ) {
-		(exampleFun1 *)item->destroy();
-	}
-	long long int md2_5() {
-		return 0x1318bb259d65ee19LL;
-	}
-};	
+#define FUNCLASS exampleFun1
+#include <capabilityAPI.h>
 
-
-long long int exampleFun1::key[] = {md2_5(),0x7e95373c35421368LL};
-int exampleFun1::getKey( long long int *k ) {
-	k[0]=key[0];
-	k[1]=key[1];
-	return 1;
-}
 
 int exampleFun1::run( void *argv ) {
   int session = newSession();
@@ -98,9 +73,5 @@ int exampleFun1::run( void *argv ) {
 	return 1;
 }
 
-int exampleFun1::destroy( ) {
-	delete this;
-	return 1;
-}
 
 

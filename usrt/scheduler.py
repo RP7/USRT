@@ -1,7 +1,7 @@
 from ctypes import *  
 from os import path
 import time
-from usrt.logger import log
+from usrt.logger import log,md5key
 
 class Task(Structure):
   _fields_ = [
@@ -18,7 +18,7 @@ class Task(Structure):
 
 class Scheduler:
 	def __init__(self):
-		self.key = "a449428a47383acfd816603b55c3cfa7"
+		self.key = md5key(self.__module__)
 		self._dll = CDLL(path.join("work","libcontainerapi.so"))
 
 	def _pushTask(self,globeDict,task ):

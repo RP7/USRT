@@ -37,12 +37,12 @@ def testPushTask( globeDict, task ):
 if __name__ =="__main__":
 	init(sys.argv[1])
 	argv = (c_int*2)(0,0)
-	task={'ID':'1' ,'key':'a449428a47383acfd816603b55c3cfa7','argv':globeDict }
+	task={'ID':'1' ,'key':usrt.logger.md5key('usrt.scheduler'),'argv':globeDict }
 	testPushTask(globeDict,task) 
-	task={'ID':'2' ,'key':'7e95373c354213681318bb259d65ee19','argv':byref(argv) }
+	task={'ID':'2' ,'key':usrt.logger.md5key('exampleFun1'),'argv':byref(argv) }
 	testPushTask(globeDict,task)
-	logQ=usrt.logger.logQ 
+	logQ=usrt.logger.logQ
+
 	while True:
 		time,level,str=logQ.get()
 		print "[%s]%lf:%s" %(level,time,str)
-		
