@@ -47,4 +47,4 @@ if __name__ =="__main__":
 	testPushTask(globeDict,task)
 	
 	while True:
-		dump([" run"])
+		dump([" run","info"])
