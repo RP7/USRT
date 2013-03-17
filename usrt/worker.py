@@ -1,6 +1,7 @@
 from ctypes import *  
 from os import path
 import threading
+import time
 from usrt.logger import log
 
 class Worker(threading.Thread):
@@ -72,9 +73,14 @@ class Worker(threading.Thread):
 					del self._globeTask[tag]
 				self._mutex.release()
 			if item!={}:
+				begin=time.time()
 				self._run(self._modules[item['key']],item['argv'])
+				du = time.time()-begin
+				logstr = " run %dus" % int(du*1000000.)
 				if 'to' in item:
 					self._overQ.put(item)
+					log(" run",item['key']+logstr)
+				
 			
 def worker( argv, k ):
 	return Worker( argv, k )

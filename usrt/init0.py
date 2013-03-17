@@ -8,7 +8,9 @@ sys.path.append(path.abspath('.'))
 import usrt.worker
 import usrt.dummycapability
 import usrt.scheduler
-import usrt.logger
+from usrt.logger import dump
+import time
+
 workers=[]
 globeDict={}
 
@@ -43,8 +45,6 @@ if __name__ =="__main__":
 	testPushTask(globeDict,task) 
 	task={'ID':'2' ,'key':usrt.logger.md5key('exampleFun1'),'argv':byref(argv) }
 	testPushTask(globeDict,task)
-	logQ=usrt.logger.logQ
-
+	
 	while True:
-		time,level,str=logQ.get()
-		print "[%s]%lf:%s" %(level,time,str)
+		dump([" run","info"])

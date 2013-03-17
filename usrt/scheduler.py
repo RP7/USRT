@@ -67,8 +67,6 @@ class Scheduler:
 		overQ=argv['overQ']
 		while overQ.empty()==False:
 			overTask=overQ.get()
-			error = str(overTask)
-			log("Error",error)
 			vertexes[overTask['to']]['dep']-=1
 			
 		for k,v in vertexes.items():
