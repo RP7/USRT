@@ -42,7 +42,7 @@ int exampleFun1::run( void *argv ) {
 		pushTask( task );
 		ar = buildPssAntMap();
 		task = allocTask( newE("PAM",session) ); 
-		keyPssAntMap(getTaskKey(task));
+		md5key(getTaskKey(task),"capPssMap");
 		buildTask(task,afterPssMod,ar,noE,noL,valid);
 		setTaskTo( task, beforeFFT );
 		pushTask( task );
@@ -50,21 +50,21 @@ int exampleFun1::run( void *argv ) {
 	for( int i=0;i<UENum;i++ ) {
 		ar = buildUeDownCoding(i);
 		task = allocTask( newE("UeC",session) ); 
-		keyUeDownCoding(getTaskKey(task));
+		md5key(getTaskKey(task),"capDCHCoding");
 		buildTask(task,start,ar,noE,noL,valid);
 		int64 afterUeCoding = newV("AUC",session);
 		setTaskTo( task, afterUeCoding );
 		pushTask( task );
 		ar = buildUeDownMod(i);
 		task = allocTask( newE("UeM",session) ); 
-		keyUeDownMod(getTaskKey(task));
+		md5key(getTaskKey(task),"capDCHMod");
 		buildTask(task,afterUeCoding,ar,noE,noL,valid);
 		int64 afterUeMod = newV("AUM",session);
 		setTaskTo( task, afterUeMod );
 		pushTask( task );
 		ar = buildUeDownAntMap(i);
 		task = allocTask( newE("UeA",session) ); 
-		keyUeDownAntMap(getTaskKey(task));
+		md5key(getTaskKey(task),"capDCHMap");
 		buildTask(task,afterUeMod,ar,noE,noL,valid);
 		setTaskTo( task, beforeFFT );
 		pushTask( task );
