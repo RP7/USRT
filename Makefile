@@ -56,7 +56,10 @@ DUMPMEMSRC=utils/dumpMem.cpp \
   
 work/dumpMem:work/libcontainer.so $(DUMPMEMSRC)
 	g++ -I${INC} -Lwork -o work/dumpMem work/libcontainer.so $(DUMPMEMSRC)
-	
+
+work/heapcheck:usrt/worker.cpp utils/CPBuffer.cpp
+	g++ -I${INC} -D__HEAPTEST -o work/heapcheck usrt/worker.cpp utils/CPBuffer.cpp
+  
 .PHONY : clean
 clean:
 	rm work/* -f
