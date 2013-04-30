@@ -2,24 +2,64 @@
 #include <string>
 #include <CPBuffer.h>
 #include <USRTmem.h>
+#include <task.h>
 
-void USRTmem::printStack()
+void USRTmem::_printStack( int bp )
 {
+  if( bp>=STACKSIZE )
+    printf("Error too big bp\n");
   printf("digraph G {\n");
   int i;
-  int bp = (head->sp-len+STACKSIZE)%STACKSIZE;
-  if( bp>head->sp ) 
-    for( i=head->sp;i<bp;i++ )
-      dump( buf->getBuf(head->stack[i],0LL) );
+  if( bp<head->sp ) 
+    for( i=bp;i<head->sp;i++ )
+      dump( (task_t*)buf->getBuf(head->stack[i],0LL) );
   else {
     for( i=head->sp;i<STACKSIZE;i++ )
-      dump( buf->getBuf(head->stack[i],0LL) );
+      dump( (task_t*)buf->getBuf(head->stack[i],0LL) );
     for( i=0;i<bp;i++ )
-      dump( buf->getBuf(head->stack[i],0LL) );
+      dump( (task_t*)buf->getBuf(head->stack[i],0LL) );
   }
   printf("}\n");
 }
 
+void USRTmem::printStack( int len )
+{
+  int bp = (head->sp-len+STACKSIZE)%STACKSIZE;
+  _printStack(bp);
+}
+
+void USRTmem::printStack( )
+{
+  _printStack(head->rp);
+}
+void USRTmem::dumpHead()
+{
+  printf("mem file name: %s\n",head->name);
+  printf("mem brk: %lld\n",head->_brk);
+  printf("write point: %d\n",head->sp);
+  printf("read point: %d\n",head->rp);    
+  if( head->lockM.slock==1 )
+    printf("Mem lock is unlock\n");
+  else
+    printf("Mem lock is lock\n");
+  if( head->lockS.slock==1 )
+    printf("stack lock is unlock\n");
+  else
+    printf("stack lock is lock\n");
+  int bp=head->rp;
+  int cnt=0;
+  while( bp != head->sp ) {
+    printf("%4.4llx ",head->stack[bp]&0xffff);
+    bp++;
+    if( bp>=STACKSIZE )
+      bp=0;
+    cnt++;
+    if( (cnt&0x7)==0 )
+      printf("\n");
+  }
+  printf("\n");
+}
+  
 USRTmem::USRTmem( const char *n )
 {
   buf = new CPBuffer( (long long)(sizeof(task_t)*STACKSIZE)
@@ -32,12 +72,12 @@ USRTmem::USRTmem( const char *n )
 
 void USRTmem::init()
 {
-  memset(head,0,sizeof(struct structTaskMemHead);
+  memset(head,0,sizeof(struct structTaskMemHead));
 }
 
 void USRTmem::setName( const char *n )
 {
-  strcmp(head->name,n);
+  strcpy(head->name,n);
 }
 
 char* USRTmem::getName()
@@ -66,8 +106,8 @@ void USRTmem::start()
 void *USRTmem::allocMem( long long len )
 {
   __raw_spin_lock(&(head->lockM));
-  long long last = brk;
-  brk+=len;
+  long long last = head->_brk;
+  head->_brk+=len;
   __raw_spin_unlock(&(head->lockM));
   if( buf )
     return buf->getBuf(last,len);
@@ -100,65 +140,4 @@ int USRTmem::getTask( task_t* &ret )
   __raw_spin_unlock(&(head->lockS));
   return r;
 }
-
-namespace std {
-  map< string, USRTmem* > Tasks;
-  
-extern "C" {
-  void init( const char *n )
-  {
-    string memN = string( n );
-    Tasks[memN] = new USRTmem( n );
-    Tasks[memN]->init();
-    Tasks[memN]->setName( n );
-  }
-  int attach( const char *n )
-  {
-    string memN = string( n );
-    Tasks[memN] = new USRTmem( n );
-    char *name = Tasks[memN]->getName();
-    if( strcmp(name,n)==0 )
-      return 0;
-    else
-      return -1;
-  }  
-  void start( const char *n )
-  {
-    string memN = string( n );
-    Tasks[memN]->start();
-  }
-  void pushTask( const char *n, task_t t )
-  {
-    string memN = string( n );
-    Tasks[memN]->pushTask(t);
-  }
-  void *allocMem( const char *n, long long len )
-  {
-    string memN = string( n );
-    return Tasks[memN]->allocMem(len);
-  }
-  int len( const char *n )
-  {
-    string memN = string( n );
-    return Tasks[memN]->len();
-  }
-  int getTask( const char *n, task_t* &ret )
-  {
-    string memN = string( n );
-    return Tasks[memN]->getTask(ret);
-  }
-  void release(const char *n)
-  {
-    string memN = string( n );
-    delete Tasks[memN];
-    Tasks.erase(memN);
-  }
-  void printStack(const char *n)
-  {
-    string memN = string( n );
-    Tasks[memN]->printStack();
-  }
-};// extern "C"
-
-};//namespace std
 

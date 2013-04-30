@@ -18,14 +18,16 @@ work/libfun3.so:examples/fun3.cpp work/libmd5api.so
 
 CONTAINERSRC = usrt/container/task.c \
 								usrt/container/ukey.c \
-								usrt/container/usrtmem.c \
+								usrt/USRTMapMem.cpp \
+								utils/CPBuffer.cpp \
+								usrt/USRTmem.cpp \
 								usrt/container/globe.c
 work/libcontainer.so: ${CONTAINERSRC}
 	g++ -I${INC} ${FLAG} -shared -o work/libcontainer.so ${CONTAINERSRC}
 
 LTEDownExample:work/ltetest 
-work/ltetest: examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c work/libcontainer.so
-	g++ -I${INC} -Lwork -lcontainer -o work/ltetest examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c work/libcontainer.so
+work/ltetest: examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c work/libcontainer.so work/libmd5api.so
+	g++ -I${INC} -Lwork -o work/ltetest examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c work/libcontainer.so work/libmd5api.so
 
 work/libcontainerapi.so :	usrt/containerAPI.c work/libcontainer.so
 	g++ -shared  ${FLAG} -I${INC} -Lwork -lcontainer -o work/libcontainerapi.so usrt/containerAPI.c work/libcontainer.so
@@ -44,6 +46,17 @@ example1:work/libfun1.so work/libfun2.so work/libfun3.so work/libcontainerapi.so
 $(LTELibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/libmd5api.so
 	g++ -I${INC} ${FLAG} -shared -Lwork -lmd5api $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/libmd5api.so -o $@
 
+DUMPMEMSRC=utils/dumpMem.cpp \
+  usrt/USRTMapMem.cpp \
+  utils/CPBuffer.cpp \
+  usrt/USRTmem.cpp \
+  usrt/container/task.c \
+  usrt/container/ukey.c \
+  usrt/container/globe.c
+  
+work/dumpMem:work/libcontainer.so $(DUMPMEMSRC)
+	g++ -I${INC} -Lwork -o work/dumpMem work/libcontainer.so $(DUMPMEMSRC)
+	
 .PHONY : clean
 clean:
 	rm work/* -f

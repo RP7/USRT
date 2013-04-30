@@ -2,18 +2,14 @@
 #include <ukey.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <USRTSingleMem.h>
 
+extern "C" {
 short newSession()
 {
   return (short)(rand()&0xffff);
 }
-task_t *allocTask(int64 ID)
-{
-  task_t *task = (task_t*)allocMem( sizeof(task_t) );
-  task->ID = ID;
-  task->lock = 0;
-  return task;  
-}
+
 void buildTask( task_t *task, int64 start,void *ar, double noE,double noL,double valid)
 {
   task->from = start;
@@ -27,7 +23,7 @@ void setTaskTo( task_t *task, int64 to )
   task->to = to;  
 }
 void dump( task_t *task ) {
-  if( task_t != NULL ) {
+  if( task != NULL ) {
     printf("\"%s(%d)\"->\"%s(%d)\" [label=\"%s(%d)\"];\n"
       ,nameOfKey(&(task->from))
       ,snOfKey(&(task->from))
@@ -40,3 +36,9 @@ void dump( task_t *task ) {
   else
     printf("NULL task\n");
 }
+
+int64 *getTaskKey(task_t *task) {
+  return task->key;
+}
+
+};

@@ -10,7 +10,7 @@ class USRTmem {
     struct structTaskMemHead {
       char name[256];
       raw_spinlock_t lockM;
-      long long brk;
+      long long _brk;
       raw_spinlock_t lockS;
       int sp;
       int rp;
@@ -18,6 +18,8 @@ class USRTmem {
     } *head;
     long long size;
     CPBuffer *buf;
+    void _printStack( int bp );
+
   public:
     USRTmem( const char *n );
     void init();
@@ -30,4 +32,7 @@ class USRTmem {
     void pushTask( task_t* task );
     int getTask( task_t* &ret );
     void printStack();
+    void printStack( int len );
+    void dumpHead();
 };
+#endif

@@ -8,6 +8,17 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
+const char *CPBuffer::getTmpDir (void) 
+{
+    char *tmpdir;
+
+    if ((tmpdir = getenv ("TEMP")) != NULL)   return tmpdir;
+    if ((tmpdir = getenv ("TMP")) != NULL)    return tmpdir;
+    if ((tmpdir = getenv ("TMPDIR")) != NULL) return tmpdir;
+
+    return "/tmp";
+}
+
 CPBuffer::CPBuffer( long long int size, long long int cp, long long res, const char *name )
 {
   mSize = alSize(size);
@@ -16,8 +27,12 @@ CPBuffer::CPBuffer( long long int size, long long int cp, long long res, const c
   
   mValid = 0;
   int retry = 0;
-  if( checkFile( name )>=0 )
-    allocMem( name );
+  
+  strcpy(mName,getTmpDir());
+  strcat(mName,"/");
+  strcat(mName,name);
+  if( checkFile( mName )>=0 )
+    allocMem( mName );
 }
 
 CPBuffer::~CPBuffer()
@@ -97,8 +112,7 @@ void *CPBuffer::getBuf( long long from, long long len )
 
 long long CPBuffer::getOff( void *buf )
 {
-  size_t off = buf-mpStart;
-  long long ret = ( long long )off;
+  long long ret = (unsigned long long)buf-(unsigned long long)mpStart;
   if( ret<0 )
     return -1;
   else

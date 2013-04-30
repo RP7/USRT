@@ -13,6 +13,7 @@ class CPBuffer {
     long long alSize( long long sz);
     int checkFile( const char *name );
     int mValid;
+    const char *getTmpDir (void);
   public:
     CPBuffer( long long int size, long long int cp, long long res, const char *name );
     ~CPBuffer();
@@ -21,5 +22,6 @@ class CPBuffer {
     int valid();
     void *attach();
     long long getSize();
+    long long getOff( void *buf );
   };
 #endif
