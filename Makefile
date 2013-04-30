@@ -46,7 +46,7 @@ $(LTELibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/
 
 .PHONY : clean
 clean:
-	rm work/*
+	rm work/* -f
 	python scripts/prepare.py work
 
 		
