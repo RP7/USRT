@@ -1,5 +1,5 @@
 #include <usrttype.h>
-#include <USRTMapMem.h>
+#include <MapMem.h>
 
 int main( int argc, char *argv[] )
 {

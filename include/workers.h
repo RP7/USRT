@@ -1,14 +1,14 @@
-#ifndef USRT_WORKER_H
-#define USRT_WORKER_H
+#ifndef USRT_WORKERS_H
+#define USRT_WORKERS_H
 #include <map>
 #include <string>
 #include <capability.h>
 #include <CPBuffer.h>
 #include <usrttype.h>
-#include <USRTMapMem.h>
+#include <MapMem.h>
 
 namespace std {
-  class worker {
+  class workers {
     #define HEAPSIZE 256
     typedef int(*FuncCompare)(task_t*,task_t*);
     struct structHeap {
@@ -28,9 +28,9 @@ namespace std {
       CPBuffer *buf;
 
     public:
-      worker( int i );
+      workers( int i );
       void start();
-      ~worker();
+      ~workers();
       struct structWorkHead *head;
       task_t* pop( struct structHeap& h );
       int insert( struct structHeap& h, task_t* a );

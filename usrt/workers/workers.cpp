@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
-#include <worker.h>
+#include <workers.h>
 
 int compareByNoEarly(task_t* a, task_t* b)
 {
@@ -13,7 +13,7 @@ int compareByNoLater(task_t* a, task_t* b)
   return (a->noL>b->noL);  
 }
 namespace std {
-int worker::heapCheck(struct structHeap& h, int debug )
+int workers::heapCheck(struct structHeap& h, int debug )
 {
   FuncCompare func=h.func;
   int err=0;
@@ -44,11 +44,11 @@ int worker::heapCheck(struct structHeap& h, int debug )
   return err;
 }
 
-void worker::dumpTaskTime( task_t * a ) {
+void workers::dumpTaskTime( task_t * a ) {
   printf("noE: %lld -- noL: %lld\n",a->noE,a->noL);
 }
 
-task_t* worker::pop( struct structHeap& h )
+task_t* workers::pop( struct structHeap& h )
 {
   FuncCompare func=h.func;
   if( h.size==0 )
@@ -61,7 +61,7 @@ task_t* worker::pop( struct structHeap& h )
   __raw_spin_unlock(&(h.lock));
   return ret;
 }
-void worker::down(struct structHeap& h, int index )
+void workers::down(struct structHeap& h, int index )
 {
   FuncCompare func=h.func;
   int left = index*2+1;
@@ -80,7 +80,7 @@ void worker::down(struct structHeap& h, int index )
   h.heap[small]=a;
   down(h,small);
 }
-int worker::insert( struct structHeap& h, task_t *a )
+int workers::insert( struct structHeap& h, task_t *a )
 {
   FuncCompare func=h.func;
   if( h.size<HEAPSIZE ) {
@@ -94,7 +94,7 @@ int worker::insert( struct structHeap& h, task_t *a )
     return -1;
 }
 
-void worker::up(struct structHeap& h, int index )
+void workers::up(struct structHeap& h, int index )
 {
   FuncCompare func=h.func;
   if( index==0 )
@@ -108,11 +108,12 @@ void worker::up(struct structHeap& h, int index )
   }
 }
 
-void worker::start() {
+void workers::start() {
   __raw_spin_unlock(&(head->wait.lock));
   __raw_spin_unlock(&(head->ready.lock));
 }
-worker::worker( int i )
+
+workers::workers( int i )
 {
   char file[256];
   sprintf(file,"worker_%04d",i);
@@ -131,7 +132,7 @@ worker::worker( int i )
 #ifdef __HEAPTEST
 int main()
 {
-  std::worker *tut = new std::worker(0);
+  std::workers *tut = new std::workers(0);
   task_t *tasks = new task_t[HEAPSIZE];
   int i;
   tut->start();

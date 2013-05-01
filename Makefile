@@ -18,10 +18,11 @@ work/libfun3.so:examples/fun3.cpp work/libmd5api.so
 
 CONTAINERSRC = usrt/container/task.c \
 								usrt/container/ukey.c \
-								usrt/USRTMapMem.cpp \
+								usrt/mem/MapMem.cpp \
 								utils/CPBuffer.cpp \
-								usrt/USRTmem.cpp \
+								usrt/mem/mem.cpp \
 								usrt/container/globe.c
+								
 work/libcontainer.so: ${CONTAINERSRC}
 	g++ -I${INC} ${FLAG} -shared -o work/libcontainer.so ${CONTAINERSRC}
 
@@ -46,10 +47,17 @@ example1:work/libfun1.so work/libfun2.so work/libfun3.so work/libcontainerapi.so
 $(LTELibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/libmd5api.so
 	g++ -I${INC} ${FLAG} -shared -Lwork -lmd5api $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/libmd5api.so -o $@
 
+WorkersInternalCapabilities := $(wildcard usrt/workers/cap*.cpp)
+WorkersInternalLibs := $(patsubst %.cpp,%.so,$(subst usrt/workers/cap,work/lib,$(WorkersInternalCapabilities)))
+$(WorkersInternalLibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,usrt/workers/cap,$@)) work/libmd5api.so
+	g++ -I${INC} ${FLAG} -shared -Lwork -lmd5api $(patsubst %.so,%.cpp,$(subst work/lib,usrt/workers/cap,$@)) work/libmd5api.so -o $@
+
+worker:$(WorkersInternalLibs)
+
 DUMPMEMSRC=utils/dumpMem.cpp \
-  usrt/USRTMapMem.cpp \
+  usrt/mem/MapMem.cpp \
   utils/CPBuffer.cpp \
-  usrt/USRTmem.cpp \
+  usrt/mem/mem.cpp \
   usrt/container/task.c \
   usrt/container/ukey.c \
   usrt/container/globe.c
@@ -57,8 +65,8 @@ DUMPMEMSRC=utils/dumpMem.cpp \
 work/dumpMem:work/libcontainer.so work/libmd5api.so $(DUMPMEMSRC)
 	g++ -I${INC} -Lwork  -lmd5api -o work/dumpMem $(DUMPMEMSRC) work/libcontainer.so work/libmd5api.so 
 
-work/heapcheck:usrt/worker.cpp utils/CPBuffer.cpp
-	g++ -I${INC} -D__HEAPTEST -o work/heapcheck usrt/worker.cpp utils/CPBuffer.cpp
+work/heapcheck:usrt/workers/workers.cpp utils/CPBuffer.cpp  work/libmd5api.so
+	g++ -I${INC} -D__HEAPTEST -o work/heapcheck  usrt/workers/workers.cpp utils/CPBuffer.cpp work/libmd5api.so 
   
 .PHONY : clean
 clean:

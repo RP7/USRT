@@ -1,7 +1,7 @@
 #include <map>
 #include <string>
 #include <CPBuffer.h>
-#include <USRTmem.h>
+#include "mem.h"
 
 
 namespace std {
