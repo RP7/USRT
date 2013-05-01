@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <CPBuffer.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <CPBuffer.h>
 
 const char *CPBuffer::getTmpDir (void) 
 {
@@ -19,7 +19,51 @@ const char *CPBuffer::getTmpDir (void)
     return "/tmp";
 }
 
+const char *CPBuffer::getFileName( const char *n)
+{
+  strcpy(mName,getTmpDir());
+  strcat(mName,"/");
+  strcat(mName,n);
+  return mName;
+}
 CPBuffer::CPBuffer( long long int size, long long int cp, long long res, const char *name )
+{
+  init( size, cp, res, name );
+}
+
+int CPBuffer::checkMeta( struct structCPBMeta* meta, int mode )
+{
+  return md5buf((unsigned char*)meta,sizeof(struct structCPBMeta),mode);
+}
+
+CPBuffer::CPBuffer( const char *name )
+{
+  const char *fn = getFileName( name );
+  struct stat st;
+  int fd;
+  int err = stat(fn,&st);
+  if( err==-1 ) {
+    if( errno == ENOENT ) {
+      fprintf(stderr,"attach file does not exist\n");
+    }
+    exit(0);
+  }
+  FILE *fp = fopen(fn,"rb");
+  struct structCPBMeta meta;
+  fread(&meta,1,sizeof(struct structCPBMeta),fp);
+  fclose(fp);
+  if( checkMeta(&meta,0)==0 ) {
+    mRes=meta.cpbLen.resLen;
+    mSize=meta.cpbLen.dataLen;
+    mCP=meta.cpbLen.cpLen;
+    init( mSize, mCP, mRes, name );
+  } 
+  else {
+    fprintf(stderr,"mem meta md5 error\n");
+  }
+}
+
+void CPBuffer::init( long long int size, long long int cp, long long res, const char *name )
 {
   mSize = alSize(size);
   mCP = alSize(cp);
@@ -28,11 +72,16 @@ CPBuffer::CPBuffer( long long int size, long long int cp, long long res, const c
   mValid = 0;
   int retry = 0;
   
-  strcpy(mName,getTmpDir());
-  strcat(mName,"/");
-  strcat(mName,name);
-  if( checkFile( mName )>=0 )
-    allocMem( mName );
+  const char *fn = getFileName( name );
+  if( checkFile( fn )>=0 )
+    allocMem( fn );
+  
+  struct structCPBMeta *meta = (struct structCPBMeta *)mpRes;
+  meta->cpbLen.resLen = mRes;
+  meta->cpbLen.dataLen = mSize;
+  meta->cpbLen.cpLen = mCP;
+  strcpy(meta->name,name);
+  checkMeta(meta,1);
 }
 
 CPBuffer::~CPBuffer()

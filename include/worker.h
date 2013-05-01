@@ -5,6 +5,8 @@
 #include <capability.h>
 #include <CPBuffer.h>
 #include <usrttype.h>
+#include <USRTMapMem.h>
+
 namespace std {
   class worker {
     #define HEAPSIZE 256

@@ -2,7 +2,6 @@
 #include <ukey.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <USRTSingleMem.h>
 
 extern "C" {
 short newSession()

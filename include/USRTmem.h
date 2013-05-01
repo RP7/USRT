@@ -4,11 +4,13 @@
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <CPBuffer.h>
 
 class USRTmem {
   private:
+    
     struct structTaskMemHead {
-      char name[256];
+      struct structCPBMeta meta;
       raw_spinlock_t lockM;
       long long _brk;
       raw_spinlock_t lockS;
@@ -21,9 +23,11 @@ class USRTmem {
     void _printStack( int bp );
 
   public:
-    USRTmem( const char *n );
+    USRTmem();
+    void newUSRTmem( const char *n );
+    void attach( const char *n );
+    void newUSRTmem( const char *n, long long dataL, long long cpL, long long resL );
     void init();
-    void setName( const char *n );
     char *getName();
     ~USRTmem();
     int len();

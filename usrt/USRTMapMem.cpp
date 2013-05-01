@@ -5,21 +5,23 @@
 
 
 namespace std {
-  map< string, USRTmem* > Tasks;
+  map< string, USRTmem* > gUSRTmems;
   
 extern "C" {
   void initMem( const char *n )
   {
     string memN = string( n );
-    Tasks[memN] = new USRTmem( n );
-    Tasks[memN]->init();
-    Tasks[memN]->setName( n );
+    gUSRTmems[memN] = new USRTmem();
+    gUSRTmems[memN]->newUSRTmem( n );
+    gUSRTmems[memN]->init();
   }
+
   int attach( const char *n )
   {
     string memN = string( n );
-    Tasks[memN] = new USRTmem( n );
-    char *name = Tasks[memN]->getName();
+    gUSRTmems[memN] = new USRTmem();
+    gUSRTmems[memN]->attach( n );
+    char *name = gUSRTmems[memN]->getName();
     if( strcmp(name,n)==0 )
       return 0;
     else
@@ -28,17 +30,17 @@ extern "C" {
   void start( const char *n )
   {
     string memN = string( n );
-    Tasks[memN]->start();
+    gUSRTmems[memN]->start();
   }
   void pushTask( const char *n, task_t* t )
   {
     string memN = string( n );
-    Tasks[memN]->pushTask(t);
+    gUSRTmems[memN]->pushTask(t);
   }
   void *allocMem( const char *n, long long len )
   {
     string memN = string( n );
-    return Tasks[memN]->allocMem(len);
+    return gUSRTmems[memN]->allocMem(len);
   }
   task_t *allocTask(const char *n,int64 ID)
   {
@@ -50,28 +52,28 @@ extern "C" {
   int len( const char *n )
   {
     string memN = string( n );
-    return Tasks[memN]->len();
+    return gUSRTmems[memN]->len();
   }
   int getTask( const char *n, task_t* &ret )
   {
     string memN = string( n );
-    return Tasks[memN]->getTask(ret);
+    return gUSRTmems[memN]->getTask(ret);
   }
   void release(const char *n)
   {
     string memN = string( n );
-    delete Tasks[memN];
-    Tasks.erase(memN);
+    delete gUSRTmems[memN];
+    gUSRTmems.erase(memN);
   }
   void printStack(const char *n)
   {
     string memN = string( n );
-    Tasks[memN]->printStack();
+    gUSRTmems[memN]->printStack();
   }
   void dumpHead(const char *n)
   {
     string memN = string( n );
-    Tasks[memN]->dumpHead();
+    gUSRTmems[memN]->dumpHead();
   }
   
 };// extern "C"

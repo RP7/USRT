@@ -34,7 +34,7 @@ void USRTmem::printStack( )
 }
 void USRTmem::dumpHead()
 {
-  printf("mem file name: %s\n",head->name);
+  printf("mem file name: %s\n",head->meta.name);
   printf("mem brk: %lld\n",head->_brk);
   printf("write point: %d\n",head->sp);
   printf("read point: %d\n",head->rp);    
@@ -59,8 +59,13 @@ void USRTmem::dumpHead()
   }
   printf("\n");
 }
-  
-USRTmem::USRTmem( const char *n )
+
+USRTmem::USRTmem()
+{
+  buf=NULL;
+}
+
+void USRTmem::newUSRTmem( const char *n )
 {
   buf = new CPBuffer( (long long)(sizeof(task_t)*STACKSIZE)
     , (long long)(sizeof(task_t))
@@ -70,19 +75,32 @@ USRTmem::USRTmem( const char *n )
   head = (struct structTaskMemHead*)buf->attach();
 }
 
-void USRTmem::init()
+void USRTmem::attach( const char *n )
 {
-  memset(head,0,sizeof(struct structTaskMemHead));
+  buf = new CPBuffer( n );
+  head = (struct structTaskMemHead*)buf->attach();
 }
 
-void USRTmem::setName( const char *n )
+void USRTmem::newUSRTmem( const char *n, long long dataL, long long cpL, long long resL )
 {
-  strcpy(head->name,n);
+  buf = new CPBuffer( dataL
+    , cpL
+    , resL
+    , n
+    );
+  head = (struct structTaskMemHead*)buf->attach();
+}
+void USRTmem::init()
+{
+  memset( ((unsigned char*)head)+sizeof(struct structCPBMeta)
+    , 0
+    , sizeof(struct structTaskMemHead)-sizeof(struct structCPBMeta)
+    );
 }
 
 char* USRTmem::getName()
 {
-  return head->name;
+  return head->meta.name;
 }
 
 USRTmem::~USRTmem()

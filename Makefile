@@ -54,8 +54,8 @@ DUMPMEMSRC=utils/dumpMem.cpp \
   usrt/container/ukey.c \
   usrt/container/globe.c
   
-work/dumpMem:work/libcontainer.so $(DUMPMEMSRC)
-	g++ -I${INC} -Lwork -o work/dumpMem work/libcontainer.so $(DUMPMEMSRC)
+work/dumpMem:work/libcontainer.so work/libmd5api.so $(DUMPMEMSRC)
+	g++ -I${INC} -Lwork  -lmd5api -o work/dumpMem $(DUMPMEMSRC) work/libcontainer.so work/libmd5api.so 
 
 work/heapcheck:usrt/worker.cpp utils/CPBuffer.cpp
 	g++ -I${INC} -D__HEAPTEST -o work/heapcheck usrt/worker.cpp utils/CPBuffer.cpp

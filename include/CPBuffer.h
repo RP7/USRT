@@ -1,5 +1,19 @@
 #ifndef __CPBUFFER_H
 #define __CPBUFFER_H
+#include <usrttype.h>
+#include <md5api.h>
+
+struct structCPBLen {
+  long long resLen;
+  long long dataLen;
+  long long cpLen;
+};
+struct structCPBMeta {
+  char name[256-sizeof(struct structCPBLen)-sizeof(int64)*2];
+  struct structCPBLen cpbLen;
+  int64 key[2];
+};
+
 class CPBuffer {
   private:
     long long int mSize;
@@ -14,8 +28,13 @@ class CPBuffer {
     int checkFile( const char *name );
     int mValid;
     const char *getTmpDir (void);
+    int checkMeta( struct structCPBMeta* meta, int mode );
+    const char *getFileName( const char *n);
+    void init( long long int size, long long int cp, long long res, const char *name );
+
   public:
     CPBuffer( long long int size, long long int cp, long long res, const char *name );
+    CPBuffer( const char *name );
     ~CPBuffer();
     void *getBuf( long long from, long long len );
     void *getBuf( long long from, int len ) { return getBuf( from, (long long)len ); };
