@@ -5,13 +5,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <CPBuffer.h>
+#include <USRTMem.h>
 
-class USRTTask : CPBuffer {
+class USRTTask : public USRTMem {
   private:
     struct structTaskMemHead {
-      struct structCPBMeta meta;
-      raw_spinlock_t lockM;
-      long long _brk;
+      struct structMemHead mem;
       raw_spinlock_t lockS;
       int sp;
       int rp;
@@ -26,16 +25,17 @@ class USRTTask : CPBuffer {
     void attach( const char *n );
     void newUSRTTask( const char *n, long long dataL, long long cpL, long long resL );
     void init();
-    char *getName();
     ~USRTTask();
     int len();
     void start();
-    void *allocMem( long long len );
     void pushTask( task_t* task );
     int getTask( task_t* &ret );
     void printStack();
     void printStack( int len );
     void dumpHead();
-    int64 getKey();
+    void dump( task_t *task );
+    char *nameOfKey( int64 *key );
+    int snOfKey( int64 *key );
+    int64 key2int( ukey_t *key );
 };
 #endif // __USRT_Task_H

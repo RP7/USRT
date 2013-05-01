@@ -7,13 +7,19 @@ typedef struct {
   unsigned int slock;
 } raw_spinlock_t;
 
+typedef struct structGeneralizedMemory {
+  int64 memKey;
+  int64 offset;
+  int64 len;
+  int64 check;
+} generalized_memory_t;
 
 typedef struct structTask {
   int64 ID;
   int64 key;
   int64 from;
   int64 to;
-  int64 argv;
+  generalized_memory_t argv;
   int64 callback;
   utime_t noE;
   utime_t noL;
@@ -22,7 +28,7 @@ typedef struct structTask {
   int state;
   int ref;
   int version;
-  int64 memKey;
+  generalized_memory_t mem;
   int64 md5[2];
 } task_t;
   
@@ -72,6 +78,5 @@ static inline void __raw_spin_unlock(raw_spinlock_t *lock)
 {
   asm volatile("movb $1,%0" : "+m" (lock->slock) :: "memory");
 }
-
 
 #endif

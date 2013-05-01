@@ -21,10 +21,13 @@ extern "C" {
   int attach( const char *n )
   {
     string memN = string( n );
+    fprintf(stderr,"file %s\n",n);
+        
     gUSRTmems[memN] = new USRTTask();
     gUSRTmems[memN]->attach( n );
+    
     gUSRTmemsByKey[gUSRTmems[memN]->getKey()]=gUSRTmems[memN];
-    char *name = gUSRTmems[memN]->getName();
+    const char *name = gUSRTmems[memN]->getName();
     if( strcmp(name,n)==0 )
       return 0;
     else
@@ -51,7 +54,9 @@ extern "C" {
     task_t *task = (task_t*)allocMem( n, sizeof(task_t) );
     memset( task, 0, sizeof(task_t) );
     task->ID = ID;
-    task->memKey=gUSRTmems[memN]->getKey();
+    task->mem.memKey=gUSRTmems[memN]->getKey();
+    task->mem.offset=gUSRTmems[memN]->getOff((void *)task);
+    task->mem.len=(long long)sizeof(task_t);
     return task;  
   }
   int len( const char *n )
@@ -82,7 +87,31 @@ extern "C" {
     string memN = string( n );
     gUSRTmems[memN]->dumpHead();
   }
-  
+  static const char *findFileByKey( int64 key )
+  {
+    CPBuffer *t = new CPBuffer();
+    const char *ret = t->findByKey( key );
+    delete t;
+    return ret;
+  }
+  void *G2L( generalized_memory_t *gp )
+  {
+    map<int64, USRTTask*>::iterator iter = gUSRTmemsByKey.find(gp->memKey);
+    if( iter==gUSRTmemsByKey.end() ) {
+      const char* fn = findFileByKey(gp->memKey);
+      if( fn !=NULL )
+      {
+        char _fn[256];
+        strcpy(_fn,fn);
+        attach( _fn );
+      }
+      iter=gUSRTmemsByKey.find(gp->memKey);
+    }
+    if( iter!=gUSRTmemsByKey.end() ) 
+      return iter->second->getBuf( gp->offset, gp->len );
+    else
+      return NULL;
+  }
 };// extern "C"
 
 };//namespace std

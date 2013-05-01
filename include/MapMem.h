@@ -11,5 +11,5 @@ extern "C" {
   void release(const char *n);
   void printStack(const char *n);
   void dumpHead(const char *n);
-  
+  void *G2L( generalized_memory_t *gp );
 };

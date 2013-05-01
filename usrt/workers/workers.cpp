@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <memory.h>
 #include <workers.h>
+#include <MapMem.h>
+
+namespace std {
 
 int compareByNoEarly(task_t* a, task_t* b)
 {
@@ -12,7 +15,7 @@ int compareByNoLater(task_t* a, task_t* b)
 {
   return (a->noL>b->noL);  
 }
-namespace std {
+
 int workers::heapCheck(struct structHeap& h, int debug )
 {
   FuncCompare func=h.func;
@@ -44,8 +47,16 @@ int workers::heapCheck(struct structHeap& h, int debug )
   return err;
 }
 
-void workers::dumpTaskTime( task_t * a ) {
+void workers::dumpTaskTime( task_t* a ) {
   printf("noE: %lld -- noL: %lld\n",a->noE,a->noL);
+}
+
+void workers::dumpHeap( struct structHeap& h ) {
+  int i;
+  for( i=0;i<h.size;i++ ) {
+    printf("No %d: ",i);
+    dumpTaskTime(h.heap[i]);
+  }
 }
 
 task_t* workers::pop( struct structHeap& h )
@@ -61,6 +72,7 @@ task_t* workers::pop( struct structHeap& h )
   __raw_spin_unlock(&(h.lock));
   return ret;
 }
+
 void workers::down(struct structHeap& h, int index )
 {
   FuncCompare func=h.func;
@@ -80,6 +92,13 @@ void workers::down(struct structHeap& h, int index )
   h.heap[small]=a;
   down(h,small);
 }
+
+int workers::insert( struct structHeap& h, generalized_memory_t *a )
+{
+  task_t *task = (task_t *)G2L(a);
+  return insert( h, task );  
+}
+
 int workers::insert( struct structHeap& h, task_t *a )
 {
   FuncCompare func=h.func;
@@ -113,50 +132,64 @@ void workers::start() {
   __raw_spin_unlock(&(head->ready.lock));
 }
 
-workers::workers( int i )
+void workers::init()
 {
-  char file[256];
-  sprintf(file,"worker_%04d",i);
-  buf=new CPBuffer(1
-    , 1
-    , (long long)sizeof(struct structWorkHead)
-    , file
+  USRTMem::init();
+  memset( ((unsigned char*)head)+sizeof(struct structMemHead)
+    , 0
+    , sizeof(struct structWorkHead)-sizeof(struct structMemHead)
     );
-  head = (struct structWorkHead*)buf->attach();
-  memset( head, 0, sizeof(struct structWorkHead) );
+}
+
+workers::workers( const char *name ):USRTMem()
+{
+  newUSRTMem( name
+    , (long long)(sizeof(generalized_memory_t)*HEAPSIZE*16)
+    , (long long)sizeof(generalized_memory_t)
+    , (long long)sizeof(struct structWorkHead)
+    );
+  head = (struct structWorkHead*)CPBuffer::attach();
+  init();
   
   head->wait.func = compareByNoEarly;
   head->ready.func = compareByNoLater;
 }
+
+workers::workers():USRTMem()
+{
+}
+
+void workers::attach( const char *name )
+{
+  USRTMem::attach( name );
+  head = (struct structWorkHead*)CPBuffer::attach();
+}
+
 }
 #ifdef __HEAPTEST
 int main()
 {
-  std::workers *tut = new std::workers(0);
-  task_t *tasks = new task_t[HEAPSIZE];
+  std::workers *tut = new std::workers("worker0");
+  USRTMem *mem = new USRTMem();
+  mem->newUSRTMem( "task0"
+    , (long long)sizeof(task_t)*512
+    , (long long)sizeof(task_t)
+    , (long long)sizeof(struct USRTMem::structMemHead)
+    );
   int i;
   tut->start();
+  mem->start();
   for(i=0;i<HEAPSIZE;i++) {
-    task_t* a=tasks+i;
+    task_t* a=(task_t*)mem->allocMem((long long)sizeof(task_t));
+    a->mem.memKey=mem->getKey();
+    a->mem.offset=mem->getOff((void *)a);
+    a->mem.len=(long long)sizeof(task_t);
     a->noE = (utime_t)(rand()&0xff);
     a->noL = (utime_t)(rand()&0xff);
-    if( tut->insert(tut->head->wait,a)!=0 ) printf("Insert wait error %d\n",tut->head->wait.size);
+    if( tut->insert(tut->head->wait,&(a->mem))!=0 ) printf("Insert wait error %d\n",tut->head->wait.size);
     if( tut->insert(tut->head->ready,a) !=0 ) printf("Insert ready error %d\n",tut->head->ready.size);
     tut->heapCheck(tut->head->wait,256);
     tut->heapCheck(tut->head->ready,256);
-  }
-  task_t *p;
-  int cnt=0;
-  while( (p=tut->pop(tut->head->wait)) != NULL ) {
-    printf( "wait %d: ",cnt );
-    tut->dumpTaskTime( p );
-    cnt++;
-  }
-  cnt=0;
-  while( (p=tut->pop(tut->head->ready)) != NULL ) {
-    printf( "ready %d: ",cnt );
-    tut->dumpTaskTime( p );
-    cnt++;
   }
 }
 #endif

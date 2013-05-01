@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <dirent.h>
 #include <CPBuffer.h>
 
 const char *CPBuffer::getTmpDir (void) 
@@ -27,6 +28,30 @@ const char *CPBuffer::getFileName( const char *n)
   return mName;
 }
 
+const char *CPBuffer::findByKey( int64 key )
+{
+  const char *tmpdir = getTmpDir();
+  struct dirent* entry;
+  DIR* dir = opendir(tmpdir);
+  while( (entry=readdir(dir))!=NULL ) {
+    FILE *fp = fopen(getFileName(entry->d_name),"rb");
+    struct structCPBMeta meta;
+    if( fp !=NULL ) {
+      fread(&meta,1,sizeof(struct structCPBMeta),fp);
+      fclose(fp);
+      fprintf(stderr," check file %s\n",entry->d_name);
+      if( meta.key[0]==key ) {
+        strcpy(mName,entry->d_name);
+        fprintf(stderr," find file %s\n",mName);
+        
+        return mName;
+      }
+    }
+  }
+  closedir( dir );
+  return NULL; 
+}
+
 void CPBuffer::newCPBuffer( long long int size, long long int cp, long long res, const char *name )
 {
   init( size, cp, res, name );
@@ -45,6 +70,7 @@ CPBuffer::CPBuffer()
 
 void CPBuffer::newCPBuffer( const char *name )
 {
+  fprintf(stderr,"mem %s\n",name);
   const char *fn = getFileName( name );
   struct stat st;
   int fd;
@@ -66,7 +92,7 @@ void CPBuffer::newCPBuffer( const char *name )
     init( mSize, mCP, mRes, name );
   } 
   else {
-    fprintf(stderr,"mem meta md5 error\n");
+    fprintf(stderr,"mem %s meta md5 error\n",fn);
   }
 }
 

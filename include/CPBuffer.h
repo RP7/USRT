@@ -44,5 +44,6 @@ class CPBuffer {
     void *attach();
     long long getSize();
     long long getOff( void *buf );
+    const char *findByKey( int64 key );
   };
 #endif

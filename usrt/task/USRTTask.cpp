@@ -1,6 +1,6 @@
 #include <map>
 #include <string>
-#include <CPBuffer.h>
+#include <USRTMem.h>
 #include <USRTTask.h>
 #include <task.h>
 
@@ -22,6 +22,34 @@ void USRTTask::_printStack( int bp )
   printf("}\n");
 }
 
+void USRTTask::dump( task_t *task ) {
+  if( task != NULL ) {
+    printf("\"%s(%d)\"->\"%s(%d)\" [label=\"%s(%d)\"];\n"
+      ,nameOfKey(&(task->from))
+      ,snOfKey(&(task->from))
+      ,nameOfKey(&(task->to))
+      ,snOfKey(&(task->to))
+      ,nameOfKey(&(task->ID))
+      ,snOfKey(&(task->ID))
+      );
+  }
+  else
+    printf("NULL task\n");
+}
+char *USRTTask::nameOfKey( int64 *key )
+{
+	ukey_t *pk=(ukey_t*)key;
+	return (char *)(void *)&(pk->name); 
+}
+int USRTTask::snOfKey( int64 *key )
+{
+	ukey_t *pk=(ukey_t*)key;
+	return (int)(pk->sn); 
+}
+int64 USRTTask::key2int( ukey_t *key )
+{
+	return *(int64 *)(key);
+}
 void USRTTask::printStack( int len )
 {
   int bp = (head->sp-len+STACKSIZE)%STACKSIZE;
@@ -34,14 +62,9 @@ void USRTTask::printStack( )
 }
 void USRTTask::dumpHead()
 {
-  printf("mem file name: %s\n",head->meta.name);
-  printf("mem brk: %lld\n",head->_brk);
+  USRTMem::dumpHead();
   printf("write point: %d\n",head->sp);
   printf("read point: %d\n",head->rp);    
-  if( head->lockM.slock==1 )
-    printf("Mem lock is unlock\n");
-  else
-    printf("Mem lock is lock\n");
   if( head->lockS.slock==1 )
     printf("stack lock is unlock\n");
   else
@@ -66,41 +89,38 @@ USRTTask::USRTTask()
 
 void USRTTask::newUSRTTask( const char *n )
 {
-  newCPBuffer( (long long)(sizeof(task_t)*STACKSIZE)
+  newUSRTMem( n
+    , (long long)(sizeof(task_t)*STACKSIZE)
     , (long long)(sizeof(task_t))
     , (long long)sizeof(struct structTaskMemHead)
-    , n
     );
   head = (struct structTaskMemHead*)CPBuffer::attach();
 }
 
 void USRTTask::attach( const char *n )
 {
-  newCPBuffer( n );
+  USRTMem::attach( n );
   head = (struct structTaskMemHead*)CPBuffer::attach();
 }
 
 void USRTTask::newUSRTTask( const char *n, long long dataL, long long cpL, long long resL )
 {
-  newCPBuffer( dataL
+  newUSRTMem( n
+    , dataL
     , cpL
     , resL
-    , n
     );
   head = (struct structTaskMemHead*)CPBuffer::attach();
 }
 void USRTTask::init()
 {
-  memset( ((unsigned char*)head)+sizeof(struct structCPBMeta)
+  USRTMem::init();
+  memset( ((unsigned char*)head)+sizeof(struct structMemHead)
     , 0
-    , sizeof(struct structTaskMemHead)-sizeof(struct structCPBMeta)
+    , sizeof(struct structTaskMemHead)-sizeof(struct structMemHead)
     );
 }
 
-char* USRTTask::getName()
-{
-  return head->meta.name;
-}
 
 USRTTask::~USRTTask()
 { 
@@ -114,16 +134,7 @@ int USRTTask::len()
 void USRTTask::start()
 { 
   __raw_spin_unlock(&(head->lockS));
-  __raw_spin_unlock(&(head->lockM));
-}
-
-void *USRTTask::allocMem( long long len )
-{
-  __raw_spin_lock(&(head->lockM));
-  long long last = head->_brk;
-  head->_brk+=len;
-  __raw_spin_unlock(&(head->lockM));
-  return getBuf(last,len);
+  USRTMem::start();
 }
 
 void USRTTask::pushTask( task_t* task )
@@ -150,9 +161,4 @@ int USRTTask::getTask( task_t* &ret )
   }
   __raw_spin_unlock(&(head->lockS));
   return r;
-}
-
-int64 USRTTask::getKey()
-{
-  return head->meta.key[0];
 }

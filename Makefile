@@ -16,15 +16,14 @@ work/libfun2.so:examples/fun2.cpp work/libmd5api.so
 work/libfun3.so:examples/fun3.cpp work/libmd5api.so
 	g++ -I${INC} ${FLAG} -shared -o work/libfun3.so examples/fun3.cpp work/libmd5api.so
 
-CONTAINERSRC = usrt/container/task.c \
-								usrt/container/ukey.c \
-								usrt/mem/MapMem.cpp \
+CONTAINERSRC = 	usrt/mem/MapMem.cpp \
 								utils/CPBuffer.cpp \
 								usrt/task/USRTTask.cpp \
+								usrt/mem/USRTMem.cpp \
 								usrt/container/globe.c
 								
-work/libcontainer.so: ${CONTAINERSRC}
-	g++ -I${INC} ${FLAG} -shared -o work/libcontainer.so ${CONTAINERSRC}
+work/libcontainer.so: ${CONTAINERSRC} work/libmd5api.so
+	g++ -I${INC} ${FLAG} -shared -o work/libcontainer.so ${CONTAINERSRC} work/libmd5api.so
 
 LTEDownExample:work/ltetest 
 work/ltetest: examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c work/libcontainer.so work/libmd5api.so
@@ -58,6 +57,7 @@ DUMPMEMSRC=utils/dumpMem.cpp \
   usrt/mem/MapMem.cpp \
   utils/CPBuffer.cpp \
   usrt/task/USRTTask.cpp \
+  usrt/mem/USRTMem.cpp \
   usrt/container/task.c \
   usrt/container/ukey.c \
   usrt/container/globe.c
@@ -65,8 +65,12 @@ DUMPMEMSRC=utils/dumpMem.cpp \
 work/dumpMem:work/libcontainer.so work/libmd5api.so $(DUMPMEMSRC)
 	g++ -I${INC} -Lwork  -lmd5api -o work/dumpMem $(DUMPMEMSRC) work/libcontainer.so work/libmd5api.so 
 
-work/heapcheck:usrt/workers/workers.cpp utils/CPBuffer.cpp  work/libmd5api.so
-	g++ -I${INC} -D__HEAPTEST -o work/heapcheck  usrt/workers/workers.cpp utils/CPBuffer.cpp work/libmd5api.so 
+work/heapcheck:usrt/workers/workers.cpp work/libcontainer.so work/libmd5api.so
+	g++ -I${INC} -D__HEAPTEST -o work/heapcheck  usrt/workers/workers.cpp work/libmd5api.so work/libcontainer.so 
+
+work/clearWorkers:usrt/workers/workers.cpp utils/CPBuffer.cpp  usrt/mem/USRTMem.cpp utils/clearWorkers.cpp work/libmd5api.so
+	g++ -I${INC} -o work/clearWorkers  usrt/workers/workers.cpp usrt/mem/USRTMem.cpp utils/CPBuffer.cpp utils/clearWorkers.cpp work/libmd5api.so 
+
   
 .PHONY : clean
 clean:
