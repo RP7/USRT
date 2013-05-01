@@ -2,17 +2,28 @@
 #define __USRTTYPE_H
 typedef long long int64;
 typedef long long utime_t;
+
+typedef struct {
+  unsigned int slock;
+} raw_spinlock_t;
+
+
 typedef struct structTask {
   int64 ID;
   int64 key;
   int64 from;
   int64 to;
+  int64 argv;
+  int64 callback;
   utime_t noE;
   utime_t noL;
   utime_t valid;
-  void *argv;
-  void *callback;
-  int lock;
+  raw_spinlock_t lock;
+  int state;
+  int ref;
+  int version;
+  int64 memKey;
+  int64 md5[2];
 } task_t;
   
 typedef struct structKey {
@@ -23,9 +34,6 @@ typedef struct structKey {
 
 #define STACKSIZE 256
 
-typedef struct {
-  unsigned int slock;
-} raw_spinlock_t;
 
 struct structGlobe {
   short snE;

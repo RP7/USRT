@@ -7,6 +7,7 @@ struct structCPBLen {
   long long resLen;
   long long dataLen;
   long long cpLen;
+  long long version;
 };
 struct structCPBMeta {
   char name[256-sizeof(struct structCPBLen)-sizeof(int64)*2];
@@ -33,8 +34,9 @@ class CPBuffer {
     void init( long long int size, long long int cp, long long res, const char *name );
 
   public:
-    CPBuffer( long long int size, long long int cp, long long res, const char *name );
-    CPBuffer( const char *name );
+    CPBuffer();
+    void newCPBuffer( long long int size, long long int cp, long long res, const char *name );
+    void newCPBuffer( const char *name );
     ~CPBuffer();
     void *getBuf( long long from, long long len );
     void *getBuf( long long from, int len ) { return getBuf( from, (long long)len ); };

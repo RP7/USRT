@@ -9,7 +9,7 @@ short newSession()
   return (short)(rand()&0xffff);
 }
 
-void buildTask( task_t *task, int64 start,void *ar, double noE,double noL,double valid)
+void buildTask( task_t *task, int64 start, int64 ar, utime_t noE, utime_t noL, utime_t valid)
 {
   task->from = start;
   task->argv = ar;

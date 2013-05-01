@@ -1,14 +1,13 @@
-#ifndef __USRT_mem_H
-#define __USRT_mem_H
+#ifndef __USRT_Task_H
+#define __USRT_Task_H
 #include <usrttype.h>
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <CPBuffer.h>
 
-class USRTmem {
+class USRTTask : CPBuffer {
   private:
-    
     struct structTaskMemHead {
       struct structCPBMeta meta;
       raw_spinlock_t lockM;
@@ -19,17 +18,16 @@ class USRTmem {
       long long stack[STACKSIZE];
     } *head;
     long long size;
-    CPBuffer *buf;
     void _printStack( int bp );
 
   public:
-    USRTmem();
-    void newUSRTmem( const char *n );
+    USRTTask();
+    void newUSRTTask( const char *n );
     void attach( const char *n );
-    void newUSRTmem( const char *n, long long dataL, long long cpL, long long resL );
+    void newUSRTTask( const char *n, long long dataL, long long cpL, long long resL );
     void init();
     char *getName();
-    ~USRTmem();
+    ~USRTTask();
     int len();
     void start();
     void *allocMem( long long len );
@@ -38,5 +36,6 @@ class USRTmem {
     void printStack();
     void printStack( int len );
     void dumpHead();
+    int64 getKey();
 };
-#endif
+#endif // __USRT_Task_H

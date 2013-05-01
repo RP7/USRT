@@ -26,7 +26,8 @@ const char *CPBuffer::getFileName( const char *n)
   strcat(mName,n);
   return mName;
 }
-CPBuffer::CPBuffer( long long int size, long long int cp, long long res, const char *name )
+
+void CPBuffer::newCPBuffer( long long int size, long long int cp, long long res, const char *name )
 {
   init( size, cp, res, name );
 }
@@ -36,7 +37,13 @@ int CPBuffer::checkMeta( struct structCPBMeta* meta, int mode )
   return md5buf((unsigned char*)meta,sizeof(struct structCPBMeta),mode);
 }
 
-CPBuffer::CPBuffer( const char *name )
+CPBuffer::CPBuffer()
+{
+  mpRes = mpCP = mpStart = (void *)-1;
+  mValid = 0;  
+}
+
+void CPBuffer::newCPBuffer( const char *name )
 {
   const char *fn = getFileName( name );
   struct stat st;

@@ -20,7 +20,7 @@ CONTAINERSRC = usrt/container/task.c \
 								usrt/container/ukey.c \
 								usrt/mem/MapMem.cpp \
 								utils/CPBuffer.cpp \
-								usrt/mem/mem.cpp \
+								usrt/task/USRTTask.cpp \
 								usrt/container/globe.c
 								
 work/libcontainer.so: ${CONTAINERSRC}
@@ -57,7 +57,7 @@ worker:$(WorkersInternalLibs)
 DUMPMEMSRC=utils/dumpMem.cpp \
   usrt/mem/MapMem.cpp \
   utils/CPBuffer.cpp \
-  usrt/mem/mem.cpp \
+  usrt/task/USRTTask.cpp \
   usrt/container/task.c \
   usrt/container/ukey.c \
   usrt/container/globe.c
