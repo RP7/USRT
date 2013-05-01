@@ -36,7 +36,7 @@ void dump( task_t *task ) {
     printf("NULL task\n");
 }
 
-int64 *getTaskKey(task_t *task) {
+int64 getTaskKey(task_t *task) {
   return task->key;
 }
 

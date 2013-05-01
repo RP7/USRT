@@ -35,14 +35,14 @@ int main( int argc, char *argv[] )
 	if( subframe==0 ) {
 		ar = buildPss();
 		task = allocTask( "LTEDownLinkTrans",newE("PsM",session) ); 
-		md5key(getTaskKey(task),"capPssMod");
+		task->key=md5first("capPssMod");
 		buildTask(task,start,ar,noE,noL,valid);
 		int64 afterPssMod = newV("APM",session);
 		setTaskTo( task, afterPssMod );
 		pushTask( "LTEDownLinkTrans",task );
 		ar = buildPssAntMap();
 		task = allocTask( "LTEDownLinkTrans",newE("PAM",session) ); 
-		md5key(getTaskKey(task),"capPssMap");
+		task->key=md5first("capPssMap");
 		buildTask(task,afterPssMod,ar,noE,noL,valid);
 		setTaskTo( task, beforeFFT );
 		pushTask( "LTEDownLinkTrans", task );
@@ -50,21 +50,21 @@ int main( int argc, char *argv[] )
 	for( int i=0;i<UENum;i++ ) {
 		ar = buildUeDownCoding(i);
 		task = allocTask( "LTEDownLinkTrans",newE("UeC",session) ); 
-		md5key(getTaskKey(task),"capDCHCoding");
+		task->key=md5first("capDCHCoding");
 		buildTask(task,start,ar,noE,noL,valid);
 		int64 afterUeCoding = newV("AUC",session);
 		setTaskTo( task, afterUeCoding );
 		pushTask( "LTEDownLinkTrans",task );
 		ar = buildUeDownMod(i);
 		task = allocTask( "LTEDownLinkTrans",newE("UeM",session) ); 
-		md5key(getTaskKey(task),"capDCHMod");
+		task->key=md5first("capDCHMod");
 		buildTask(task,afterUeCoding,ar,noE,noL,valid);
 		int64 afterUeMod = newV("AUM",session);
 		setTaskTo( task, afterUeMod );
 		pushTask( "LTEDownLinkTrans",task );
 		ar = buildUeDownAntMap(i);
 		task = allocTask( "LTEDownLinkTrans",newE("UeA",session) ); 
-		md5key(getTaskKey(task),"capDCHMap");
+		task->key=md5first("capDCHMap");
 		buildTask(task,afterUeMod,ar,noE,noL,valid);
 		setTaskTo( task, beforeFFT );
 		pushTask( "LTEDownLinkTrans",task );

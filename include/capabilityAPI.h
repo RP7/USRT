@@ -5,9 +5,9 @@
 
 class FUNCLASS : CCapability {
 	private:
-		static long long int key[2];
+		static long long int key;
 	public:
-		int getKey( long long int *k );
+		long long int getKey( );
 		int run( void *argv );
 		int destroy();
 };
@@ -30,11 +30,9 @@ extern "C" {
 #define _STR(x) #x
 #define STR(x) _STR(x)
 
-long long int FUNCLASS::key[] = {md5first(STR(FUNCLASS)),md5second(STR(FUNCLASS))};
-int FUNCLASS::getKey( long long int *k ) {
-	k[0]=key[0];
-	k[1]=key[1];
-	return 1;
+long long int FUNCLASS::key = md5first(STR(FUNCLASS));
+long long int FUNCLASS::getKey( ) {
+	return key;
 }
 int FUNCLASS::destroy( ) {
 	delete this;

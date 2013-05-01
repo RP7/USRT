@@ -4,7 +4,7 @@ typedef long long int64;
 typedef long long utime_t;
 typedef struct structTask {
   int64 ID;
-  int64 key[2];
+  int64 key;
   int64 from;
   int64 to;
   utime_t noE;
