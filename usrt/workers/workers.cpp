@@ -137,12 +137,22 @@ workers::workers( const char *name ):USRTFifo()
   newUSRTFifo( name
     , (long long)(sizeof(generalized_memory_t)*HEAPSIZE*16)
     , (long long)sizeof(generalized_memory_t)
-    , (long long)sizeof(struct structFifoHead)
+    , (long long)sizeof(struct structWorkersHead)
     );
+  head = (struct structWorkersHead*)CPBuffer::attach();
+  init();
   wait.func = compareByNoEarly;
   ready.func = compareByNoLater;
 }
 
+void workers::init()
+{
+  USRTFifo::init();
+  memset( ((unsigned char*)head)+sizeof(struct structFifoHead)
+    , 0
+    , sizeof(struct structWorkersHead)-sizeof(struct structFifoHead)
+    );
+}
 workers::workers():USRTFifo()
 {
 }
@@ -150,8 +160,40 @@ workers::workers():USRTFifo()
 void workers::attach( const char *name )
 {
   USRTFifo::attach( name );
+  head = (struct structWorkersHead*)CPBuffer::attach();
+
   wait.func = compareByNoEarly;
   ready.func = compareByNoLater;
+}
+
+void workers::lpTask2G(generalized_memory_t* gp, task_t* pt)
+{
+  L2G(gp,(void*)pt);
+  gp->len=(long long)sizeof(task_t);
+}
+void workers::storeHeap()
+{
+  int i;
+  head->waitSize = wait.size;
+  for( i=0;i<wait.size;i++ ) {
+    lpTask2G(head->gmWait+i,wait.heap[i]);
+  }
+  head->readySize = ready.size;
+  for( i=0;i<ready.size;i++ ) {
+    lpTask2G(head->gmReady+i,ready.heap[i]);
+  }
+}
+
+void workers::restoreHeap()
+{
+  int i;
+  wait.size=head->waitSize;
+  for( i=0;i<wait.size;i++ ) 
+    wait.heap[i]=(task_t*)G2L(head->gmWait+i);
+  ready.size = head->readySize;
+  for( i=0;i<ready.size;i++ ) {
+    dumpGM( head->gmReady[i] );
+  }
 }
 
 }
@@ -165,6 +207,7 @@ int main()
     , (long long)sizeof(task_t)
     , (long long)sizeof(struct USRTMem::structMemHead)
     );
+  mem->init();
   int i;
   tut->start();
   mem->start();
@@ -176,9 +219,23 @@ int main()
     a->noE = (utime_t)(rand()&0xff);
     a->noL = (utime_t)(rand()&0xff);
     if( tut->insert(tut->wait,&(a->mem))!=0 ) printf("Insert wait error %d\n",tut->wait.size);
-    if( tut->insert(tut->ready,a) !=0 ) printf("Insert ready error %d\n",tut->ready.size);
+    if( tut->insert(tut->ready,&(a->mem)) !=0 ) printf("Insert ready error %d\n",tut->ready.size);
     tut->heapCheck(tut->wait,254);
     tut->heapCheck(tut->ready,254);
   }
+  task_t *p;
+  int cnt=0;
+  while( (p=tut->pop(tut->ready)) != NULL ) {
+    generalized_memory_t g;
+    L2G(&g,(void *)p);
+    g.len = (long long)sizeof(task_t);
+    printf( "ready %d: ",cnt );
+    dumpGM(g);
+    tut->dumpTaskTime( p );
+    cnt++;
+  }
+  tut->storeHeap();
+  delete mem;
+  delete tut;
 }
 #endif

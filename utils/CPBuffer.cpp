@@ -195,9 +195,9 @@ void *CPBuffer::getBuf( long long from, long long len )
 long long CPBuffer::getOff( void *buf )
 {
   long long ret = (unsigned long long)buf-(unsigned long long)mpStart;
-  if( ret<0 )
+  if( ret<0 && ret>(mSize+mCP) )
     return -1;
-  else
+  else 
     return ret;
 }
 int CPBuffer::valid()

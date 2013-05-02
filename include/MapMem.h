@@ -12,4 +12,6 @@ extern "C" {
   void printStack(const char *n);
   void dumpHead(const char *n);
   void *G2L( generalized_memory_t *gp );
+  void L2G( generalized_memory_t* g, void* lp );
+  void dumpGM( generalized_memory_t& g );
 };

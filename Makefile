@@ -70,6 +70,10 @@ work/dumpMem:work/libcontainer.so work/libmd5api.so $(DUMPMEMSRC)
 work/heapcheck:usrt/workers/workers.cpp work/libcontainer.so work/libmd5api.so
 	g++ -I${INC} -D__HEAPTEST -o work/heapcheck  usrt/workers/workers.cpp work/libmd5api.so work/libcontainer.so 
 
+work/clearWorkers: utils/clearWorkers.cpp usrt/workers/workers.cpp work/libcontainer.so work/libmd5api.so
+	g++ -I${INC} -o work/clearWorkers  utils/clearWorkers.cpp usrt/workers/workers.cpp work/libmd5api.so work/libcontainer.so 
+
+
 .PHONY : clean
 clean:
 	rm work/* -f

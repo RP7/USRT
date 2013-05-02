@@ -20,17 +20,24 @@ namespace std {
       };
       struct structHeap wait;
       struct structHeap ready;
-       
+      struct structWorkersHead {
+        struct structFifoHead fifo;
+        int readySize;
+        generalized_memory_t gmReady[HEAPSIZE];
+        int waitSize;
+        generalized_memory_t gmWait[HEAPSIZE];
+      } *head;
     private:
       task_t card;
       std::map <int64,CCapability *> mCapabilities;
-
+      void lpTask2G(generalized_memory_t* g, task_t* pt);
+      void init();
     public:
       workers( const char* name );
       void attach( const char* name );
       workers();
       void start();
-      ~workers();
+      ~workers(){};
       task_t* pop( struct structHeap& h );
       int insert( struct structHeap& h, task_t* a );
       int insert( struct structHeap& h, generalized_memory_t* a );
@@ -38,7 +45,10 @@ namespace std {
       void up(struct structHeap& h, int index );
       int heapCheck(struct structHeap& h, int debug );
       void dumpTaskTime( task_t * a );
-      void dumpHeap(struct structHeap& h);  
+      void dumpHeap(struct structHeap& h);
+      void storeHeap();
+      void restoreHeap();
+  
 #if 0
       int init( int argc, char *argv[] );
       runAsThread();

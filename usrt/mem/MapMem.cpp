@@ -112,6 +112,30 @@ extern "C" {
     else
       return NULL;
   }
+  void L2G( generalized_memory_t* gp, void* lp ) {
+    map<int64, USRTTask*>::iterator iter;
+    for( iter=gUSRTmemsByKey.begin();iter!=gUSRTmemsByKey.end();iter++ ) {
+      if( (gp->offset=iter->second->getOff(lp))!=-1 ) {
+        gp->memKey=iter->first;
+        gp->len=1;
+        break;
+      }
+    }
+  }
+  void dumpGM( generalized_memory_t& g ) {
+    map<int64, USRTTask*>::iterator iter = gUSRTmemsByKey.find( g.memKey );
+    if( iter==gUSRTmemsByKey.end() ) {
+      fprintf(stderr,"Error gm not in map\n");
+      return;
+    }
+    map<string, USRTTask*>::iterator iters;
+    for( iters=gUSRTmems.begin();iters!=gUSRTmems.end();iters++ ) {
+      if( iters->second == iter->second ) {
+        printf("|%s(%016llx)[%lld] len: %lld |",iters->first.c_str(),g.memKey,g.offset,g.len);
+        break;
+      }
+    }
+  }
 };// extern "C"
 
 };//namespace std
