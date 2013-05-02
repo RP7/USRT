@@ -1,23 +1,23 @@
 #include <map>
 #include <string>
-#include <USRTMem.h>
+#include <USRTFifo.h>
 #include <USRTTask.h>
 #include <task.h>
 
 void USRTTask::_printStack( int bp )
 {
-  if( bp>=STACKSIZE )
+  if( bp>=FIFOSIZE )
     printf("Error too big bp\n");
   printf("digraph G {\n");
   int i;
-  if( bp<head->sp ) 
-    for( i=bp;i<head->sp;i++ )
-      dump( (task_t*)getBuf(head->stack[i],0LL) );
+  if( bp<getHead()->sp ) 
+    for( i=bp;i<getHead()->sp;i++ )
+      dump( (task_t*)getBuf(getHead()->fifo[i],0LL) );
   else {
-    for( i=head->sp;i<STACKSIZE;i++ )
-      dump( (task_t*)getBuf(head->stack[i],0LL) );
+    for( i=getHead()->sp;i<FIFOSIZE;i++ )
+      dump( (task_t*)getBuf(getHead()->fifo[i],0LL) );
     for( i=0;i<bp;i++ )
-      dump( (task_t*)getBuf(head->stack[i],0LL) );
+      dump( (task_t*)getBuf(getHead()->fifo[i],0LL) );
   }
   printf("}\n");
 }
@@ -52,35 +52,13 @@ int64 USRTTask::key2int( ukey_t *key )
 }
 void USRTTask::printStack( int len )
 {
-  int bp = (head->sp-len+STACKSIZE)%STACKSIZE;
+  int bp = (getHead()->sp-len+FIFOSIZE)%FIFOSIZE;
   _printStack(bp);
 }
 
 void USRTTask::printStack( )
 {
-  _printStack(head->rp);
-}
-void USRTTask::dumpHead()
-{
-  USRTMem::dumpHead();
-  printf("write point: %d\n",head->sp);
-  printf("read point: %d\n",head->rp);    
-  if( head->lockS.slock==1 )
-    printf("stack lock is unlock\n");
-  else
-    printf("stack lock is lock\n");
-  int bp=head->rp;
-  int cnt=0;
-  while( bp != head->sp ) {
-    printf("%4.4llx ",head->stack[bp]&0xffff);
-    bp++;
-    if( bp>=STACKSIZE )
-      bp=0;
-    cnt++;
-    if( (cnt&0x7)==0 )
-      printf("\n");
-  }
-  printf("\n");
+  _printStack(getHead()->rp);
 }
 
 USRTTask::USRTTask()
@@ -89,76 +67,36 @@ USRTTask::USRTTask()
 
 void USRTTask::newUSRTTask( const char *n )
 {
-  newUSRTMem( n
-    , (long long)(sizeof(task_t)*STACKSIZE)
+  newUSRTFifo( n
+    , (long long)(sizeof(task_t)*FIFOSIZE)
     , (long long)(sizeof(task_t))
-    , (long long)sizeof(struct structTaskMemHead)
+    , (long long)sizeof(struct structFifoHead)
     );
-  head = (struct structTaskMemHead*)CPBuffer::attach();
-}
-
-void USRTTask::attach( const char *n )
-{
-  USRTMem::attach( n );
-  head = (struct structTaskMemHead*)CPBuffer::attach();
 }
 
 void USRTTask::newUSRTTask( const char *n, long long dataL, long long cpL, long long resL )
 {
-  newUSRTMem( n
+  newUSRTFifo( n
     , dataL
     , cpL
     , resL
     );
-  head = (struct structTaskMemHead*)CPBuffer::attach();
 }
-void USRTTask::init()
-{
-  USRTMem::init();
-  memset( ((unsigned char*)head)+sizeof(struct structMemHead)
-    , 0
-    , sizeof(struct structTaskMemHead)-sizeof(struct structMemHead)
-    );
-}
-
 
 USRTTask::~USRTTask()
 { 
 }
 
-int USRTTask::len()
-{ 
-  return (head->sp-head->rp+STACKSIZE)%STACKSIZE;
-}
-
-void USRTTask::start()
-{ 
-  __raw_spin_unlock(&(head->lockS));
-  USRTMem::start();
-}
-
 void USRTTask::pushTask( task_t* task )
 {
-  __raw_spin_lock(&(head->lockS));
-  head->stack[head->sp]=getOff((void *)task);
-  head->sp++;
-  if( head->sp>=STACKSIZE )
-    head->sp = 0;
-  __raw_spin_unlock(&(head->lockS));
+  push((void *)task);
 }
 
 int USRTTask::getTask( task_t* &ret )
 {
-  ret = NULL;
+  ret = (task_t*)get();
   int r=-1;
-  __raw_spin_lock(&(head->lockS));
-  if( head->rp!=head->sp ) {
-    ret = (task_t*)getBuf(head->stack[head->rp],(long long)sizeof(task_t));
-    head->rp++;
-    if( head->rp>=STACKSIZE )
-      head->rp = 0;
+  if( ret!=NULL )
     r=0;
-  }
-  __raw_spin_unlock(&(head->lockS));
   return r;
 }

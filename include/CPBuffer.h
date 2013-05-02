@@ -8,9 +8,10 @@ struct structCPBLen {
   long long dataLen;
   long long cpLen;
   long long version;
+  long long type;
 };
 struct structCPBMeta {
-  char name[256-sizeof(struct structCPBLen)-sizeof(int64)*2];
+  char name[METASIZE-sizeof(struct structCPBLen)-sizeof(int64)*2];
   struct structCPBLen cpbLen;
   int64 key[2];
 };

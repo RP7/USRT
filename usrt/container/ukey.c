@@ -3,7 +3,10 @@
 #include <assert.h>
 
 extern "C" {
-
+int64 key2int( ukey_t *key )
+{
+	return *(int64 *)(key);
+}
 int64 newKey( const char*name, int session, short *sn )
 {
 	assert( strlen(name)==3 );

@@ -12,7 +12,7 @@ short newSession()
 void buildTask( task_t *task, int64 start, int64 ar, utime_t noE, utime_t noL, utime_t valid)
 {
   task->from = start;
-  task->argv = ar;
+//  task->argv = ar;
   task->noE = noE;
   task->noL = noL;
   task->valid = valid;

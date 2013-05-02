@@ -128,41 +128,30 @@ void workers::up(struct structHeap& h, int index )
 }
 
 void workers::start() {
-  __raw_spin_unlock(&(head->wait.lock));
-  __raw_spin_unlock(&(head->ready.lock));
+  __raw_spin_unlock(&(wait.lock));
+  __raw_spin_unlock(&(ready.lock));
 }
 
-void workers::init()
+workers::workers( const char *name ):USRTFifo()
 {
-  USRTMem::init();
-  memset( ((unsigned char*)head)+sizeof(struct structMemHead)
-    , 0
-    , sizeof(struct structWorkHead)-sizeof(struct structMemHead)
-    );
-}
-
-workers::workers( const char *name ):USRTMem()
-{
-  newUSRTMem( name
+  newUSRTFifo( name
     , (long long)(sizeof(generalized_memory_t)*HEAPSIZE*16)
     , (long long)sizeof(generalized_memory_t)
-    , (long long)sizeof(struct structWorkHead)
+    , (long long)sizeof(struct structFifoHead)
     );
-  head = (struct structWorkHead*)CPBuffer::attach();
-  init();
-  
-  head->wait.func = compareByNoEarly;
-  head->ready.func = compareByNoLater;
+  wait.func = compareByNoEarly;
+  ready.func = compareByNoLater;
 }
 
-workers::workers():USRTMem()
+workers::workers():USRTFifo()
 {
 }
 
 void workers::attach( const char *name )
 {
-  USRTMem::attach( name );
-  head = (struct structWorkHead*)CPBuffer::attach();
+  USRTFifo::attach( name );
+  wait.func = compareByNoEarly;
+  ready.func = compareByNoLater;
 }
 
 }
@@ -186,10 +175,10 @@ int main()
     a->mem.len=(long long)sizeof(task_t);
     a->noE = (utime_t)(rand()&0xff);
     a->noL = (utime_t)(rand()&0xff);
-    if( tut->insert(tut->head->wait,&(a->mem))!=0 ) printf("Insert wait error %d\n",tut->head->wait.size);
-    if( tut->insert(tut->head->ready,a) !=0 ) printf("Insert ready error %d\n",tut->head->ready.size);
-    tut->heapCheck(tut->head->wait,256);
-    tut->heapCheck(tut->head->ready,256);
+    if( tut->insert(tut->wait,&(a->mem))!=0 ) printf("Insert wait error %d\n",tut->wait.size);
+    if( tut->insert(tut->ready,a) !=0 ) printf("Insert ready error %d\n",tut->ready.size);
+    tut->heapCheck(tut->wait,254);
+    tut->heapCheck(tut->ready,254);
   }
 }
 #endif

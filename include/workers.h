@@ -5,28 +5,25 @@
 #include <capability.h>
 #include <CPBuffer.h>
 #include <usrttype.h>
-#include <USRTMem.h>
+#include <USRTFifo.h>
 
 namespace std {
-  class workers : public USRTMem {
+  class workers : public USRTFifo {
     #define HEAPSIZE 256
     typedef int(*FuncCompare)(task_t*,task_t*);
-    struct structHeap {
-      int size;
-      raw_spinlock_t lock;
-      task_t* heap[HEAPSIZE];
-      FuncCompare func;
-    };
-    struct structWorkHead {
-      struct structMemHead mem;
+    public:
+      struct structHeap {
+        int size;
+        raw_spinlock_t lock;
+        task_t* heap[HEAPSIZE];
+        FuncCompare func;
+      };
       struct structHeap wait;
       struct structHeap ready;
-      task_t card;
-    };
        
     private:
+      task_t card;
       std::map <int64,CCapability *> mCapabilities;
-      void init();
 
     public:
       workers( const char* name );
@@ -34,7 +31,6 @@ namespace std {
       workers();
       void start();
       ~workers();
-      struct structWorkHead *head;
       task_t* pop( struct structHeap& h );
       int insert( struct structHeap& h, task_t* a );
       int insert( struct structHeap& h, generalized_memory_t* a );

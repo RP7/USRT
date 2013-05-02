@@ -20,14 +20,16 @@ CONTAINERSRC = 	usrt/mem/MapMem.cpp \
 								utils/CPBuffer.cpp \
 								usrt/task/USRTTask.cpp \
 								usrt/mem/USRTMem.cpp \
+								usrt/mem/USRTFifo.cpp \
+								usrt/container/ukey.c \
 								usrt/container/globe.c
 								
 work/libcontainer.so: ${CONTAINERSRC} work/libmd5api.so
 	g++ -I${INC} ${FLAG} -shared -o work/libcontainer.so ${CONTAINERSRC} work/libmd5api.so
 
 LTEDownExample:work/ltetest 
-work/ltetest: examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c work/libcontainer.so work/libmd5api.so
-	g++ -I${INC} -Lwork -o work/ltetest examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c work/libcontainer.so work/libmd5api.so
+work/ltetest: examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c usrt/container/task.c work/libcontainer.so work/libmd5api.so
+	g++ -I${INC} -Lwork -o work/ltetest examples/LTEDownLinkTrans.cpp examples/LTEDownLinkTransMock.c usrt/container/task.c  work/libcontainer.so work/libmd5api.so
 
 work/libcontainerapi.so :	usrt/containerAPI.c work/libcontainer.so
 	g++ -shared  ${FLAG} -I${INC} -Lwork -lcontainer -o work/libcontainerapi.so usrt/containerAPI.c work/libcontainer.so
@@ -58,7 +60,7 @@ DUMPMEMSRC=utils/dumpMem.cpp \
   utils/CPBuffer.cpp \
   usrt/task/USRTTask.cpp \
   usrt/mem/USRTMem.cpp \
-  usrt/container/task.c \
+  usrt/mem/USRTFifo.cpp \
   usrt/container/ukey.c \
   usrt/container/globe.c
   
@@ -68,10 +70,6 @@ work/dumpMem:work/libcontainer.so work/libmd5api.so $(DUMPMEMSRC)
 work/heapcheck:usrt/workers/workers.cpp work/libcontainer.so work/libmd5api.so
 	g++ -I${INC} -D__HEAPTEST -o work/heapcheck  usrt/workers/workers.cpp work/libmd5api.so work/libcontainer.so 
 
-work/clearWorkers:usrt/workers/workers.cpp utils/CPBuffer.cpp  usrt/mem/USRTMem.cpp utils/clearWorkers.cpp work/libmd5api.so
-	g++ -I${INC} -o work/clearWorkers  usrt/workers/workers.cpp usrt/mem/USRTMem.cpp utils/CPBuffer.cpp utils/clearWorkers.cpp work/libmd5api.so 
-
-  
 .PHONY : clean
 clean:
 	rm work/* -f

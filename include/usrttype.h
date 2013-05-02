@@ -38,8 +38,8 @@ typedef struct structKey {
   short session;
 } ukey_t;
 
-#define STACKSIZE 256
-
+#define FIFOSIZE 256
+#define METASIZE 256
 
 struct structGlobe {
   short snE;
