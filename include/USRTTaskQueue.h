@@ -1,5 +1,5 @@
-#ifndef USRT_WORKERS_H
-#define USRT_WORKERS_H
+#ifndef USRT_Task_Queue_H
+#define USRT_Task_Queue_H
 #include <map>
 #include <string>
 #include <capability.h>
@@ -8,7 +8,7 @@
 #include <USRTFifo.h>
 
 namespace std {
-  class workers : public USRTFifo {
+  class USRTTaskQueue : public USRTFifo {
     #define HEAPSIZE 256
     typedef int(*FuncCompare)(task_t*,task_t*);
     public:
@@ -29,18 +29,17 @@ namespace std {
       } *head;
     private:
       task_t card;
-      std::map <int64,CCapability *> mCapabilities;
       void lpTask2G(generalized_memory_t* g, task_t* pt);
       void init();
       int insert( struct structHeap& h, task_t* a );
       void down(struct structHeap& h, int index );
       void up(struct structHeap& h, int index );
     public:
-      workers( const char* name );
+      USRTTaskQueue( const char* name );
       void attach( const char* name );
-      workers();
+      USRTTaskQueue();
       void start();
-      ~workers(){};
+      ~USRTTaskQueue(){};
       task_t* pop( struct structHeap& h );
       int insert( struct structHeap& h, generalized_memory_t* a );
       int heapCheck(struct structHeap& h, int debug );
@@ -48,13 +47,7 @@ namespace std {
       void dumpHeap(struct structHeap& h);
       void storeHeap();
       void restoreHeap();
-  
-#if 0
-      int init( int argc, char *argv[] );
-      runAsThread();
-      bindCpu();
-#endif
   };
 }
-#endif
+#endif //USRT_Task_Queue_H
 

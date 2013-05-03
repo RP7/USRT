@@ -67,11 +67,11 @@ DUMPMEMSRC=utils/dumpMem.cpp \
 work/dumpMem:work/libcontainer.so work/libmd5api.so $(DUMPMEMSRC)
 	g++ -I${INC} -Lwork  -lmd5api -o work/dumpMem $(DUMPMEMSRC) work/libcontainer.so work/libmd5api.so 
 
-work/heapcheck:usrt/workers/workers.cpp work/libcontainer.so work/libmd5api.so
-	g++ -I${INC} -D__HEAPTEST -o work/heapcheck  usrt/workers/workers.cpp work/libmd5api.so work/libcontainer.so 
+work/heapcheck:usrt/workers/USRTTaskQueue.cpp work/libcontainer.so work/libmd5api.so
+	g++ -I${INC} -D__HEAPTEST -o work/heapcheck  usrt/workers/USRTTaskQueue.cpp work/libmd5api.so work/libcontainer.so 
 
-work/clearWorkers: utils/clearWorkers.cpp usrt/workers/workers.cpp work/libcontainer.so work/libmd5api.so
-	g++ -I${INC} -o work/clearWorkers  utils/clearWorkers.cpp usrt/workers/workers.cpp work/libmd5api.so work/libcontainer.so 
+work/dumpQueue: utils/dumpQueue.cpp usrt/workers/USRTTaskQueue.cpp work/libcontainer.so work/libmd5api.so
+	g++ -I${INC} -o work/dumpQueue utils/dumpQueue.cpp usrt/workers/USRTTaskQueue.cpp work/libmd5api.so work/libcontainer.so 
 
 
 .PHONY : clean

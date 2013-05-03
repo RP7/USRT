@@ -1,7 +1,7 @@
-#include <workers.h>
+#include <USRTTaskQueue.h>
 int main(int argc, char *argv[])
 {
-  std::workers *tut = new std::workers();
+  std::USRTTaskQueue *tut = new std::USRTTaskQueue();
   tut->attach(argv[1]);
   tut->dumpHead();
   tut->restoreHeap();
