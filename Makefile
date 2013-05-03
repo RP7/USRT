@@ -73,6 +73,8 @@ work/heapcheck:usrt/workers/USRTTaskQueue.cpp work/libcontainer.so work/libmd5ap
 work/dumpQueue: utils/dumpQueue.cpp usrt/workers/USRTTaskQueue.cpp work/libcontainer.so work/libmd5api.so
 	g++ -I${INC} -o work/dumpQueue utils/dumpQueue.cpp usrt/workers/USRTTaskQueue.cpp work/libmd5api.so work/libcontainer.so 
 
+work/dumpKey: utils/dumpCapKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libcontainer.so work/libmd5api.so
+	g++ -I${INC} -o work/dumpKey utils/dumpCapKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libmd5api.so work/libcontainer.so 
 
 .PHONY : clean
 clean:
