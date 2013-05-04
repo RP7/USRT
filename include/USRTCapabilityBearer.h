@@ -1,23 +1,27 @@
 #ifndef capability_Bearer_H
 #define capability_Bearer_H
+
 #include <capability.h>
 #include <usrttype.h>
 #include <dlfcn.h>
 
 class USRTCapabilityBearer {
-  typedef CCapability(*factroyFunc)();
-  typedef void(*getKeyFunc)(CCapability* item,long long int *k);
+  typedef CCapability*(*factroyFunc)();
+  typedef int64(*getKeyFunc)(CCapability* item);
   typedef void(*runFunc)(CCapability* item,void *argv);
   typedef void(*destroyFunc)(CCapability* item);
   private:
     void init();
+    const char *getFileName( const char *n);
+    const char *getWorkingDir (void);
+    void *getFunc(const char *sym);
     int getHandle(const char* lib);
     char mName[256];
     int mValid;
     factroyFunc mFactroy;
     getKeyFunc mGetKey;
     runFunc mRun;
-    destroyFunc mDistroy;
+    destroyFunc mDestroy;
     void *handle;
     int64 key;
     CCapability* item;
@@ -27,6 +31,7 @@ class USRTCapabilityBearer {
     void run(generalized_memory_t* argv);
     int64 getKey() { return key; };
     int isValid() { return mValid; };
+    const char *getName() { return mName; };
     ~USRTCapabilityBearer();
 };
 
