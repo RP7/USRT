@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     initMem("task0");
     start("task0");
     task_t *t = allocTask("task0",1LL);
-    tut->run(&(t->mem));
+    tut->runGP(&(t->mem));
   }
   delete tut;
 }

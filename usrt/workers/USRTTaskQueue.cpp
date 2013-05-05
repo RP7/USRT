@@ -97,7 +97,10 @@ void USRTTaskQueue::down(struct structHeap& h, int index )
 int USRTTaskQueue::insert( generalized_memory_t *a )
 {
   task_t *task = (task_t *)G2L(a);
-  return insert( wait, task );  
+  if( wait.size<HEAPSIZE-1 )
+    return insert( wait, task );
+  else
+    return -1;  
 }
 
 int USRTTaskQueue::insert( struct structHeap& h, task_t *a )
@@ -112,6 +115,27 @@ int USRTTaskQueue::insert( struct structHeap& h, task_t *a )
     return 0;
   } else
     return -1;
+}
+
+int USRTTaskQueue::del( struct structHeap& h, task_t *a )
+{
+  int ret = -1;
+  if( h.size==0 ) 
+    return ret;
+  __raw_spin_lock(&(h.lock));
+  int i;
+  for( i=0;i<h.size;i++ ) {
+    if( h.heap[i]==a )
+      break;
+  }
+  if( i!=h.size ) {
+    h.size--;
+    h.heap[i]=h.heap[h.size];
+    down(h,i);
+    ret = 0;
+  }
+  __raw_spin_unlock(&(h.lock));
+  return ret;
 }
 
 void USRTTaskQueue::up(struct structHeap& h, int index )
@@ -205,14 +229,17 @@ int USRTTaskQueue::update()
     card.noE = getNow();
     insert(wait,&card);
     task_t *t;
-    while( (t=pop(wait))!=(&card) ) {
-      if( t!=NULL ) {
-        insert(ready,t);
-        cnt++;
-      }
-      else
+    while( ready.size<HEAPSIZE-1 ) {
+      t=pop(wait);
+      if( t==NULL )
         break;
+      if( t==&card )
+        break;
+      insert(ready,t);
+      cnt++;
     }
+    if( t!=&card )
+      del(wait,&card);
     __raw_spin_unlock(&criticalArea);
   }    
   return cnt;

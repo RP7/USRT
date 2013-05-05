@@ -19,10 +19,29 @@ work/libfun3.so:examples/fun3.cpp work/libmd5api.so
 CONTAINERSRC = 	usrt/mem/MapMem.cpp \
 								utils/CPBuffer.cpp \
 								usrt/task/USRTTask.cpp \
+								usrt/worker/USRTWorkers.cpp \
+								usrt/worker/USRTTaskQueue.cpp \
+								usrt/worker/USRTCapabilityBearer.cpp \
 								usrt/mem/USRTMem.cpp \
 								usrt/mem/USRTFifo.cpp \
 								usrt/container/ukey.c \
 								usrt/container/globe.c
+
+USRTSRC = 	usrt/mem/MapMem.cpp \
+		  			utils/CPBuffer.cpp \
+						usrt/task/USRTTask.cpp \
+						usrt/workers/USRTWorkers.cpp \
+						usrt/workers/USRTTaskQueue.cpp \
+						usrt/workers/USRTCapabilityBearer.cpp \
+						usrt/mem/USRTMem.cpp \
+						usrt/mem/USRTFifo.cpp \
+						usrt/container/ukey.c \
+						usrt/container/globe.c
+
+
+work/libUSRT.so: ${USRTSRC} work/libmd5api.so
+	g++ -I${INC} ${FLAG} -shared -o work/libUSRT.so ${USRTSRC} work/libmd5api.so -ldl
+
 								
 work/libcontainer.so: ${CONTAINERSRC} work/libmd5api.so
 	g++ -I${INC} ${FLAG} -shared -o work/libcontainer.so ${CONTAINERSRC} work/libmd5api.so
@@ -50,8 +69,9 @@ $(LTELibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/
 
 WorkersInternalCapabilities := $(wildcard usrt/workers/cap*.cpp)
 WorkersInternalLibs := $(patsubst %.cpp,%.so,$(subst usrt/workers/cap,work/lib,$(WorkersInternalCapabilities)))
-$(WorkersInternalLibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,usrt/workers/cap,$@)) work/libmd5api.so
-	g++ -I${INC} ${FLAG} -shared -Lwork -lmd5api $(patsubst %.so,%.cpp,$(subst work/lib,usrt/workers/cap,$@)) work/libmd5api.so -o $@
+
+$(WorkersInternalLibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,usrt/workers/cap,$@)) work/libmd5api.so work/libUSRT.so
+	g++ -I${INC} ${FLAG} -shared -Lwork -lmd5api $(patsubst %.so,%.cpp,$(subst work/lib,usrt/workers/cap,$@)) work/libmd5api.so work/libUSRT.so -o $@
 
 worker:$(WorkersInternalLibs)
 
@@ -73,14 +93,14 @@ work/heapcheck:usrt/workers/USRTTaskQueue.cpp work/libcontainer.so work/libmd5ap
 work/dumpQueue: utils/dumpQueue.cpp usrt/workers/USRTTaskQueue.cpp work/libcontainer.so work/libmd5api.so
 	g++ -I${INC} -o work/dumpQueue utils/dumpQueue.cpp usrt/workers/USRTTaskQueue.cpp work/libmd5api.so work/libcontainer.so 
 
-work/dumpKey: utils/dumpCapKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libcontainer.so work/libmd5api.so
-	g++ -I${INC}  -o work/dumpKey utils/dumpCapKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libmd5api.so work/libcontainer.so -ldl
+work/dumpKey: utils/dumpCapKey.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC}  -o work/dumpKey utils/dumpCapKey.cpp work/libmd5api.so work/libUSRT.so -ldl -lpthread
 
-work/findCapByKey: utils/findCapByKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libcontainer.so work/libmd5api.so
-	g++ -I${INC}  -o work/findCapByKey utils/findCapByKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libmd5api.so work/libcontainer.so -ldl
+work/findCapByKey: utils/findCapByKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC}  -o work/findCapByKey utils/findCapByKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libmd5api.so work/libUSRT.so -ldl -lpthread
 
-work/keeperCheck: utils/keeperCheck.cpp usrt/workers/USRTCapabilityBearer.cpp work/libcontainer.so work/libmd5api.so
-	g++ -I${INC}  -o work/keeperCheck utils/keeperCheck.cpp usrt/workers/USRTCapabilityBearer.cpp work/libmd5api.so work/libcontainer.so -ldl
+work/keeperCheck: utils/keeperCheck.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC}  -o work/keeperCheck utils/keeperCheck.cpp work/libmd5api.so work/libUSRT.so -ldl -lpthread
 
 .PHONY : clean
 clean:

@@ -32,6 +32,7 @@ namespace std {
       void lpTask2G(generalized_memory_t* g, task_t* pt);
       void init();
       int insert( struct structHeap& h, task_t* a );
+      int del(struct structHeap& h, task_t* a );
       void down(struct structHeap& h, int index );
       void up(struct structHeap& h, int index );
       task_t* pop( struct structHeap& h );

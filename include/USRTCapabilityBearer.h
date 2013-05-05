@@ -28,7 +28,8 @@ class USRTCapabilityBearer {
   public:
     USRTCapabilityBearer( const char* lib );
     USRTCapabilityBearer( int64 key );
-    void run(generalized_memory_t* argv);
+    void runGP(generalized_memory_t* argv);
+    void runLP(void* argv);
     int64 getKey() { return key; };
     int isValid() { return mValid; };
     const char *getName() { return mName; };

@@ -56,9 +56,14 @@ void USRTCapabilityBearer::init()
     key=0LL;
 }
 
-void USRTCapabilityBearer::run(generalized_memory_t* gpArgv)
+void USRTCapabilityBearer::runGP(generalized_memory_t* gpArgv)
 {
   void *lpArgv = G2L( gpArgv );
+  mRun(item,lpArgv);
+}
+
+void USRTCapabilityBearer::runLP(void* lpArgv)
+{
   mRun(item,lpArgv);
 }
 
