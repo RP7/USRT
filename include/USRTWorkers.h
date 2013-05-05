@@ -7,19 +7,19 @@
 #include <usrttype.h>
 #include <USRTTaskQueue.h>
 #include <USRTCapabilityBearer.h>
-#include <USERWorkersKeeper.h>
+#include <USRTWorkersKeeper.h>
 
 namespace std {
-  class USERWorkers {
+  class USRTWorkers {
     private:
       USRTTaskQueue *tQ;
       map<int64,USRTCapabilityBearer *> caps;
     public:
-      USERWorkers( const char* name );
+      USRTWorkers( const char* name );
       void defaultKeeper( struct WorkerKeeperCTX *ctx );
       void start( int n );
-      ~USERWorkers(){};
-      task_t* pop( );
+      ~USRTWorkers(){};
+      task_t* pop();
   };
 }
 #endif //USRT_Workers_H

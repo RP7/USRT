@@ -2,7 +2,7 @@
 #include <capabilityAPI.h>
 #include <stdio.h>
 #include <usrttype.h>
-#include <USRTWorkerKeeper.h>
+#include <USRTWorkersKeeper.h>
 
 int FUNCLASS::run( void *argv ) {
 

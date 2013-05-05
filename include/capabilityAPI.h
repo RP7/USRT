@@ -21,10 +21,10 @@ extern "C" {
 		(FUNCLASS *)item->run( argv );
 	}
 	long long int getKey( CCapability* item){
-		return (FUNCLASS *)item->getKey();
+		return ((FUNCLASS *)item)->getKey();
 	}
 	void destroy( CCapability* item ) {
-		(FUNCLASS *)item->destroy();
+		((FUNCLASS *)item)->destroy();
 	}
 };	
 #define _STR(x) #x
