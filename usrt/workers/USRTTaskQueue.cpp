@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
+#include <sys/time.h>
 #include <USRTTaskQueue.h>
 #include <MapMem.h>
 
@@ -93,10 +94,10 @@ void USRTTaskQueue::down(struct structHeap& h, int index )
   down(h,small);
 }
 
-int USRTTaskQueue::insert( struct structHeap& h, generalized_memory_t *a )
+int USRTTaskQueue::insert( generalized_memory_t *a )
 {
   task_t *task = (task_t *)G2L(a);
-  return insert( h, task );  
+  return insert( wait, task );  
 }
 
 int USRTTaskQueue::insert( struct structHeap& h, task_t *a )
@@ -130,6 +131,7 @@ void USRTTaskQueue::up(struct structHeap& h, int index )
 void USRTTaskQueue::start() {
   __raw_spin_unlock(&(wait.lock));
   __raw_spin_unlock(&(ready.lock));
+  __raw_spin_unlock(&criticalArea);
 }
 
 USRTTaskQueue::USRTTaskQueue( const char *name ):USRTFifo()
@@ -195,6 +197,34 @@ void USRTTaskQueue::restoreHeap()
     dumpGM( head->gmReady[i] );
   }
 }
+int USRTTaskQueue::update() 
+{
+  int cnt=0;
+  if( criticalArea.slock ) {
+    __raw_spin_lock(&criticalArea);
+    card.noE = getNow();
+    insert(wait,&card);
+    task_t *t;
+    while( (t=pop(wait))!=(&card) ) {
+      if( t!=NULL ) {
+        insert(ready,t);
+        cnt++;
+      }
+      else
+        break;
+    }
+    __raw_spin_unlock(&criticalArea);
+  }    
+  return cnt;
+}
+utime_t USRTTaskQueue::getNow()
+{
+	struct timeval tv;
+	gettimeofday(&tv,0);
+	utime_t now = (utime_t)tv.tv_sec*1000000;
+	now += (utime_t)tv.tv_usec;
+	return now;
+}
 
 }
 #ifdef __HEAPTEST
@@ -211,21 +241,23 @@ int main()
   int i;
   tut->start();
   mem->start();
-  for(i=0;i<HEAPSIZE;i++) {
+  for(i=0;i<HEAPSIZE-1;i++) {
     task_t* a=(task_t*)mem->allocMem((long long)sizeof(task_t));
     a->mem.memKey=mem->getKey();
     a->mem.offset=mem->getOff((void *)a);
     a->mem.len=(long long)sizeof(task_t);
-    a->noE = (utime_t)(rand()&0xff);
-    a->noL = (utime_t)(rand()&0xff);
-    if( tut->insert(tut->wait,&(a->mem))!=0 ) printf("Insert wait error %d\n",tut->wait.size);
-    if( tut->insert(tut->ready,&(a->mem)) !=0 ) printf("Insert ready error %d\n",tut->ready.size);
-    tut->heapCheck(tut->wait,254);
-    tut->heapCheck(tut->ready,254);
+    a->noE = tut->getNow();
+    a->noL = tut->getNow();
+    if( tut->insert(&(a->mem))!=0 ) printf("Insert wait error %d\n",tut->wait.size);
+    tut->heapCheck(tut->wait,253);
   }
+  tut->storeHeap();
+  int updateTask = tut->update();
+  printf( "Update task %d\n",updateTask);
+  tut->heapCheck(tut->ready,253);
   task_t *p;
   int cnt=0;
-  while( (p=tut->pop(tut->ready)) != NULL ) {
+  while( (p=tut->pop()) != NULL ) {
     generalized_memory_t g;
     L2G(&g,(void *)p);
     g.len = (long long)sizeof(task_t);
@@ -234,7 +266,6 @@ int main()
     tut->dumpTaskTime( p );
     cnt++;
   }
-  tut->storeHeap();
   delete mem;
   delete tut;
 }

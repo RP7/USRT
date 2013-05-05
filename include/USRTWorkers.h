@@ -16,6 +16,7 @@ namespace std {
       map<int64,USRTCapabilityBearer *> caps;
     public:
       USRTWorkers( const char* name );
+      USRTTaskQueue *tQueue() { return tQ; };
       void defaultKeeper( struct WorkerKeeperCTX *ctx );
       void start( int n );
       ~USRTWorkers(){};

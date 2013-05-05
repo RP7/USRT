@@ -34,19 +34,23 @@ namespace std {
       int insert( struct structHeap& h, task_t* a );
       void down(struct structHeap& h, int index );
       void up(struct structHeap& h, int index );
+      task_t* pop( struct structHeap& h );
+      raw_spinlock_t criticalArea;
     public:
       USRTTaskQueue( const char* name );
       void attach( const char* name );
       USRTTaskQueue();
       void start();
       ~USRTTaskQueue(){};
-      task_t* pop( struct structHeap& h );
-      int insert( struct structHeap& h, generalized_memory_t* a );
       int heapCheck(struct structHeap& h, int debug );
+      int insert( generalized_memory_t* a );
+      task_t* pop( ){ return pop( ready ); };
+      int update();
       void dumpTaskTime( task_t * a );
       void dumpHeap(struct structHeap& h);
       void storeHeap();
       void restoreHeap();
+      utime_t getNow();
   };
 }
 #endif //USRT_Task_Queue_H

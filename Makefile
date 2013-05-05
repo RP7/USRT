@@ -79,6 +79,9 @@ work/dumpKey: utils/dumpCapKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/li
 work/findCapByKey: utils/findCapByKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libcontainer.so work/libmd5api.so
 	g++ -I${INC}  -o work/findCapByKey utils/findCapByKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libmd5api.so work/libcontainer.so -ldl
 
+work/keeperCheck: utils/keeperCheck.cpp usrt/workers/USRTCapabilityBearer.cpp work/libcontainer.so work/libmd5api.so
+	g++ -I${INC}  -o work/keeperCheck utils/keeperCheck.cpp usrt/workers/USRTCapabilityBearer.cpp work/libmd5api.so work/libcontainer.so -ldl
+
 .PHONY : clean
 clean:
 	rm work/* -f

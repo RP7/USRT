@@ -4,6 +4,7 @@
 
 struct WorkerKeeperCTX {
   std::USRTWorkers *workers;
+  raw_spinlock_t keeperLock;
   };
   
 #endif //USRT_Workers_Keeper_H
