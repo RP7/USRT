@@ -1,4 +1,4 @@
-#define FUNCLASS capWorkersSetKeeper
+#define FUNCLASS capWorkersSetQueue
 #include <capabilityAPI.h>
 #include <stdio.h>
 #include <usrttype.h>
@@ -15,8 +15,8 @@ int FUNCLASS::run( void *argv ) {
   struct mainWorkerCTX *ctx = (struct mainWorkerCTX *)argv;
   if( !ctx->workers )
     return -1;
-  int64 key = *(int64*)ctx->argv;
-  ctx->workers->setDefaultKeeper( key );
+  const char* qName = (const char*)ctx->argv;
+  ctx->workers->setQueue( qName );
   return 0;
 }
 

@@ -102,6 +102,12 @@ work/findCapByKey: utils/findCapByKey.cpp usrt/workers/USRTCapabilityBearer.cpp 
 work/keeperCheck: utils/keeperCheck.cpp work/libUSRT.so work/libmd5api.so
 	g++ -I${INC}  -o work/keeperCheck utils/keeperCheck.cpp work/libmd5api.so work/libUSRT.so -ldl -lpthread
 
+work/workers: usrt/workers/workers.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC}  -o work/workers usrt/workers/workers.cpp work/libmd5api.so work/libUSRT.so -ldl -lpthread
+
+work/configWorkers: utils/configWorkers.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC}  -o work/configWorkers utils/configWorkers.cpp work/libmd5api.so work/libUSRT.so -ldl -lpthread
+
 .PHONY : clean
 clean:
 	rm work/* -f

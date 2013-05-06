@@ -50,6 +50,8 @@ namespace std {
       static void worker( void *argv );
       static void mainWorker( void *argv );
       void setDefaultKeeper(int64 key);
+      void workerExit(){ control=-1; };
+      void listCaps();
   };
 }
 #endif //USRT_Workers_H

@@ -139,7 +139,14 @@ namespace std {
     else
       return NULL; 
   }
-      
+  void USRTWorkers::listCaps()
+  {
+    map<int64,USRTCapabilityBearer *>::iterator iter;
+    for( iter=caps.begin();iter!=caps.end();iter++ ) {
+      if( iter->second->isValid() )
+        fprintf(stderr,"%llx(%s)\n",iter->second->getKey(),iter->second->getName());
+    }  
+  }    
   static void USRTWorkers::worker( void *argv )
   {
     struct structThread *my = (struct structThread *)argv;
@@ -191,17 +198,24 @@ namespace std {
       if( my->len()>0 ) {
         task_t *t = my->get();
         bearer = my->getBearerByKey(t->key);
-        if( bearer==NULL )
+        if( bearer==NULL ) {
           my->setCap(t->key);
-        bearer = my->getBearerByKey(t->key);
+          bearer = my->getBearerByKey(t->key);
+        }
         if( bearer!=NULL ) {
-          mCtx.argv=G2L(&(t->argv));
-          bearer->runLP( &(mCtx) );
+          if( t->ID==0LL ) {
+            mCtx.argv=G2L(&(t->argv));
+            bearer->runLP( &(mCtx) );
+          }
+          else
+            bearer->runGP(&(t->argv));
         }
       }
       else
-        sleep(100);
+        sleep(1);
     }
     delete my;     
   }
 };
+
+
