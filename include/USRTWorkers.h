@@ -52,6 +52,8 @@ namespace std {
       void setDefaultKeeper(int64 key);
       void workerExit(){ control=-1; };
       void listCaps();
+      void dumpQueue() { if( tQ ) tQ->dumpHeap(); };
+      void listThread() {}
   };
 }
 #endif //USRT_Workers_H

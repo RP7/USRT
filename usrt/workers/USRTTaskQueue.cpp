@@ -49,13 +49,19 @@ int USRTTaskQueue::heapCheck(struct structHeap& h, int debug )
 }
 
 void USRTTaskQueue::dumpTaskTime( task_t* a ) {
-  printf("noE: %lld -- noL: %lld\n",a->noE,a->noL);
+  fprintf(stderr,"noE: %lld -- noL: %lld\n",a->noE,a->noL);
 }
-
+void USRTTaskQueue::dumpHeap()
+{
+    fprintf(stderr,"Wait Heap\n");
+    dumpHeap(wait);
+    fprintf(stderr,"Ready Heap\n");
+    dumpHeap(ready);
+}
 void USRTTaskQueue::dumpHeap( struct structHeap& h ) {
   int i;
   for( i=0;i<h.size;i++ ) {
-    printf("No %d: ",i);
+    fprintf(stderr,"No %d: ",i);
     dumpTaskTime(h.heap[i]);
   }
 }

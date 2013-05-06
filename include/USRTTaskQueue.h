@@ -49,6 +49,7 @@ namespace std {
       int update();
       void dumpTaskTime( task_t * a );
       void dumpHeap(struct structHeap& h);
+      void dumpHeap();
       void storeHeap();
       void restoreHeap();
       utime_t getNow();
