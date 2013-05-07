@@ -73,7 +73,6 @@ WorkersInternalLibs := $(patsubst %.cpp,%.so,$(subst usrt/workers/cap,work/lib,$
 $(WorkersInternalLibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,usrt/workers/cap,$@)) work/libmd5api.so work/libUSRT.so
 	g++ -I${INC} ${FLAG} -shared -Lwork -lmd5api $(patsubst %.so,%.cpp,$(subst work/lib,usrt/workers/cap,$@)) work/libmd5api.so work/libUSRT.so -o $@
 
-worker:$(WorkersInternalLibs)
 
 DUMPMEMSRC=utils/dumpMem.cpp \
   usrt/mem/MapMem.cpp \
@@ -107,6 +106,15 @@ work/workers: usrt/workers/workers.cpp work/libUSRT.so work/libmd5api.so
 
 work/configWorkers: utils/configWorkers.cpp work/libUSRT.so work/libmd5api.so
 	g++ -I${INC}  -o work/configWorkers utils/configWorkers.cpp work/libmd5api.so work/libUSRT.so -ldl -lpthread
+
+UTILS = work/configWorkers \
+  work/workers \
+  work/findCapByKey \
+  work/dumpKey \
+  work/keeperCheck 
+  
+
+worker:$(WorkersInternalLibs) $(UTILS)
 
 .PHONY : clean
 clean:

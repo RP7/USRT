@@ -100,9 +100,11 @@ USRTCapabilityBearer::USRTCapabilityBearer( int64 k )
   struct dirent* entry;
   DIR* dir = opendir(workdir);
   while( (entry=readdir(dir))!=NULL ) {
+    dlerror();
     handle = dlopen (getFileName(entry->d_name), RTLD_LAZY);
     if( !handle ) {
       fprintf(stderr," check lib %s fail\n",entry->d_name);
+      fprintf (stderr, "%s\n", dlerror());
       continue;
     }
     mValid=1;

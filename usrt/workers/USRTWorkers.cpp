@@ -68,6 +68,7 @@ namespace std {
   USRTWorkers::USRTWorkers( const char* name )
   {
     newUSRTTask( name );
+    USRTTask::start();
     tids = NULL;
     threadNum = 0;
     ctx.workers = this;
