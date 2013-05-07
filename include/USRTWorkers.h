@@ -16,15 +16,35 @@
 namespace std {
   class USRTWorkers;
   enum threadState { CREATING, RUNNING, WAITING, KEEPER, EXITING };
+  struct structThreadMonitor {
+    unsigned long long int run;
+    unsigned long long int keeper;
+    unsigned long long int keeperLock;
+    unsigned long long int callback;
+  };
+    
   struct structThread {
     pthread_t tid;
     volatile int control;
     volatile enum threadState state;
     int id;
+    struct structThreadMonitor monitor;
     USRTWorkers *workers;
   };
   class USRTWorkers : USRTTask {
+    private:
+      void dumpMonitor( struct structThreadMonitor& m ) {
+        fprintf(stderr,"R:%lld K:%lld L:%lld CB:%lld\n",m.run,m.keeper,m.keeperLock,m.callback);
+      };
     public:
+      void dumpThread( struct structThread *t ) {
+        fprintf(stderr,"thread %d state:%d control:%d\n",t->id,(int)t->state,t->control);
+        dumpMonitor( t->monitor );
+      };
+      void dumpThread() {
+        for(int i=0;i<threadNum;i++ )
+          dumpThread( tids[i] );
+      };
     private:
       static int64 keeperKey;
       USRTTaskQueue *tQ;

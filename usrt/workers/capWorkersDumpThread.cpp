@@ -1,10 +1,9 @@
-#define FUNCLASS capWorkersDumpQueue
+#define FUNCLASS capWorkersDumpThread
 #include <capabilityAPI.h>
 #include <stdio.h>
 #include <usrttype.h>
 #include <USRTWorkersKeeper.h>
 #include <USRTWorkers.h>
-#include <USRTTaskQueue.h>
 #include <MapMem.h>
 #include <sys/types.h>
 #include <linux/unistd.h>
@@ -16,8 +15,7 @@ int FUNCLASS::run( void *argv ) {
   struct mainWorkerCTX *ctx = (struct mainWorkerCTX *)argv;
   if( !ctx->workers )
     return -1;
-  if( ctx->workers->tQueue() )
-    ctx->workers->tQueue()->dumpHeap();
+  ctx->workers->dumpThread();
   return 0;
 }
 

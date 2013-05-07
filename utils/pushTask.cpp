@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <USRTCapabilityBearer.h>
-#include <USRTHardTimer.h>
+#include <USRTTaskQueue.h>
 
 #include <usrttype.h>
 #include <MapMem.h>
@@ -58,19 +58,25 @@ int main(int argc, char *argv[])
         break;
     }
   }
-  fprintf(stderr,"Run: %llx -t %s \n",capKey,tName);            
-  attach(tName);
-  void *a = allocMem(tName,((bufLen+16)/16)*16);
+  fprintf(stderr,"Run: %llx -t %s \n",capKey,tName);
+  USRTTaskQueue q;
+  initMem("task1");
+  start("task1");
+  q.attach(tName);
+  void *a = allocMem("task1",((bufLen+16)/16)*16);
   memset(a,0,bufLen+16);
   memcpy(a,buf,bufLen);
   fprintf(stderr,"prepare args\n");
-  task_t *task = allocTask(tName,1LL);
+  task_t *task = allocTask("task1",1LL);
   L2G(&(task->argv),a);
   task->key = capKey;
-  USRTHardTimer time(0);
-  task->noE = task->noL = time.date()+(long long int)delay;
-  fprintf(stderr,"prepare task\n");
-  pushTask(tName,task);
+  task->noL = q.getNow()+(long long int)delay;
+  task->noE = task->noL;
+  fprintf(stderr,"prepare task %lld\n",task->noE);
+  void *vgp = q.allocMem(sizeof(generalized_memory_t));
+  memcpy( vgp, &(task->mem), sizeof(generalized_memory_t) );
+  q.push(vgp);
   fprintf(stderr,"push task\n");
-  release(tName);
+  release("task1");
+  
 }

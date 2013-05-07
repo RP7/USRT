@@ -166,6 +166,7 @@ namespace std {
       task_t *t = my->workers->pop();
       USRTCapabilityBearer *bearer;
       if( t != NULL ) {
+        my->monitor.run++;
         int64 capKey = t->key;
         bearer = my->workers->getBearerByKey(capKey);
         if( bearer != NULL ) {
@@ -178,6 +179,7 @@ namespace std {
         }
       }
       else {
+        my->monitor.keeper++;
         my->state=KEEPER;
         bearer = my->workers->getBearerByKey(keeperKey);
         if( bearer!=NULL )

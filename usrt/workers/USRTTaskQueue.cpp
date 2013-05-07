@@ -103,10 +103,12 @@ void USRTTaskQueue::down(struct structHeap& h, int index )
 int USRTTaskQueue::insert( generalized_memory_t *a )
 {
   task_t *task = (task_t *)G2L(a);
+  if( task==NULL )
+    return -2; // Empty Task
   if( wait.size<HEAPSIZE-1 )
     return insert( wait, task );
   else
-    return -1;  
+    return -1; // Full
 }
 
 int USRTTaskQueue::insert( struct structHeap& h, task_t *a )
@@ -162,10 +164,7 @@ void USRTTaskQueue::start() {
   __raw_spin_unlock(&(wait.lock));
   __raw_spin_unlock(&(ready.lock));
   __raw_spin_unlock(&criticalArea);
-  fprintf(stderr,"Before Fifo\n");
   USRTFifo::start();
-  fprintf(stderr,"After Fifo\n");
-
 }
 
 USRTTaskQueue::USRTTaskQueue( const char *name ):USRTFifo()

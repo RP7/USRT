@@ -25,7 +25,10 @@ int FUNCLASS::run( void *argv ) {
 	}
   if( ctx->keeperLock.slock ) {
     __raw_spin_lock(&(ctx->keeperLock));
-    while( ctx->workers->tQueue()->len()>0 ) {
+    int length;
+    while( (length=ctx->workers->tQueue()->len())>0 ) {
+      
+      fprintf(stderr,"Queue has %d task\n",length);
       generalized_memory_t *gpTask = (generalized_memory_t *)ctx->workers->tQueue()->get();
       if( gpTask != NULL ) {
         int put = ctx->workers->tQueue()->insert( gpTask );
@@ -39,8 +42,7 @@ int FUNCLASS::run( void *argv ) {
     __raw_spin_unlock(&(ctx->keeperLock));    
   }
   else {    
-	  printf("you are into Worker Keeper\n");
-	  printf("thread %d can not get keeper lock\n",my->id);
+	  my->monitor.keeperLock++;
 	}
 	return 1;
 }
