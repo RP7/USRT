@@ -11,16 +11,16 @@
 using namespace std;
 
 int FUNCLASS::run( void *argv ) {
-  
-  struct WorkerKeeperCTX *ctx = (struct WorkerKeeperCTX *)argv;
+  struct structThread *my = (struct structThread*)argv;
+  struct WorkerKeeperCTX *ctx = &(my->workers->ctx);
   if( !ctx->workers ) {    
 	  printf("you are into Worker Keeper\n");
-	  printf("thread %ld can not get worker\n",(long int)syscall(224));
+	  printf("thread %d can not get worker\n",my->id);
 	  return;
 	}
   if( ctx->workers->tQueue() == NULL ) {    
 	  printf("you are into Worker Keeper\n");
-	  printf("thread %ld can not get Queue\n",(long int)syscall(224));
+	  printf("thread %d can not get Queue\n",my->id);
 	  return;
 	}
   if( ctx->keeperLock.slock ) {
@@ -40,7 +40,7 @@ int FUNCLASS::run( void *argv ) {
   }
   else {    
 	  printf("you are into Worker Keeper\n");
-	  printf("thread %ld can not get keeper lock\n",(long int)syscall(224));
+	  printf("thread %d can not get keeper lock\n",my->id);
 	}
 	return 1;
 }

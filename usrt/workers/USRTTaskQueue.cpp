@@ -162,6 +162,10 @@ void USRTTaskQueue::start() {
   __raw_spin_unlock(&(wait.lock));
   __raw_spin_unlock(&(ready.lock));
   __raw_spin_unlock(&criticalArea);
+  fprintf(stderr,"Before Fifo\n");
+  USRTFifo::start();
+  fprintf(stderr,"After Fifo\n");
+
 }
 
 USRTTaskQueue::USRTTaskQueue( const char *name ):USRTFifo()

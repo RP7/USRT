@@ -15,5 +15,6 @@ class USRTHardTimer {
   public:
     USRTHardTimer( int time ) {end=getNow()+(long long int)time;};
     int expired() { return end<getNow(); };
+    long long int date() { return getNow(); };
 };
 #endif //USRT_Hard_Timer_H

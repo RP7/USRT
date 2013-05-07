@@ -15,7 +15,7 @@ int FUNCLASS::run( void *argv ) {
   struct mainWorkerCTX *ctx = (struct mainWorkerCTX *)argv;
   if( !ctx->workers )
     return -1;
-  int64 key= *(int64* )ctx->argv;
+  int64 key= md5first("capWorkersKeeper");
   ctx->workers->setDefaultKeeper( key );
   return 0;
 }

@@ -58,14 +58,15 @@ MD5LIBSRC = utils/md5.c utils/md5api.c
 work/libmd5api.so: ${MD5LIBSRC}
 	g++ -I${INC} ${FLAG} -shared -o work/libmd5api.so ${MD5LIBSRC}
 
-LTECapabilities := $(wildcard examples/cap*.cpp)
-LTELibs := $(patsubst %.cpp,%.so,$(subst examples/cap,work/lib,$(LTECapabilities)))
+ExamplesCapabilities := $(wildcard examples/cap*.cpp)
+ExamplesLibs := $(patsubst %.cpp,%.so,$(subst examples/cap,work/lib,$(ExamplesCapabilities)))
+$(ExamplesLibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/libmd5api.so
+	g++ -I${INC} ${FLAG} -shared -Lwork -lmd5api $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/libmd5api.so -o $@
+example:$(ExamplesLibs)
 
 example1:work/libfun1.so work/libfun2.so work/libfun3.so work/libcontainerapi.so work/libmd5api.so $(LTELibs)
 
 
-$(LTELibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/libmd5api.so
-	g++ -I${INC} ${FLAG} -shared -Lwork -lmd5api $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/libmd5api.so -o $@
 
 WorkersInternalCapabilities := $(wildcard usrt/workers/cap*.cpp)
 WorkersInternalLibs := $(patsubst %.cpp,%.so,$(subst usrt/workers/cap,work/lib,$(WorkersInternalCapabilities)))
@@ -74,7 +75,7 @@ $(WorkersInternalLibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,usrt/worker
 	g++ -I${INC} ${FLAG} -shared -Lwork -lmd5api $(patsubst %.so,%.cpp,$(subst work/lib,usrt/workers/cap,$@)) work/libmd5api.so work/libUSRT.so -o $@
 
 
-DUMPMEMSRC=utils/dumpMem.cpp \
+DUMPMEMSRC= \
   usrt/mem/MapMem.cpp \
   utils/CPBuffer.cpp \
   usrt/task/USRTTask.cpp \
@@ -83,8 +84,8 @@ DUMPMEMSRC=utils/dumpMem.cpp \
   usrt/container/ukey.c \
   usrt/container/globe.c
   
-work/dumpMem:work/libcontainer.so work/libmd5api.so $(DUMPMEMSRC)
-	g++ -I${INC} -Lwork  -lmd5api -o work/dumpMem $(DUMPMEMSRC) work/libcontainer.so work/libmd5api.so 
+work/dumpMem:work/libUSRT.so work/libmd5api.so utils/dumpMem.cpp
+	g++ -I${INC} -Lwork  -lmd5api -o work/dumpMem utils/dumpMem.cpp work/libUSRT.so work/libmd5api.so -ldl -lpthread
 
 work/heapcheck:usrt/workers/USRTTaskQueue.cpp work/libcontainer.so work/libmd5api.so
 	g++ -I${INC} -D__HEAPTEST -o work/heapcheck  usrt/workers/USRTTaskQueue.cpp work/libmd5api.so work/libcontainer.so 
@@ -107,11 +108,16 @@ work/workers: usrt/workers/workers.cpp work/libUSRT.so work/libmd5api.so
 work/configWorkers: utils/configWorkers.cpp work/libUSRT.so work/libmd5api.so
 	g++ -I${INC}  -o work/configWorkers utils/configWorkers.cpp work/libmd5api.so work/libUSRT.so -ldl -lpthread
 
+work/pushTask: utils/pushTask.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC}  -o work/pushTask utils/pushTask.cpp work/libmd5api.so work/libUSRT.so -ldl -lpthread
+
 UTILS = work/configWorkers \
   work/workers \
   work/findCapByKey \
   work/dumpKey \
-  work/keeperCheck 
+  work/keeperCheck \
+  work/pushTask \
+  work/dumpMem
   
 
 worker:$(WorkersInternalLibs) $(UTILS)

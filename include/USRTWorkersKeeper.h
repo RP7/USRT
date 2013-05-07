@@ -7,7 +7,7 @@ struct WorkerKeeperCTX {
   USRTWorkers *workers;
   raw_spinlock_t keeperLock;
   };
-  
+
 struct mainWorkerCTX {
   USRTWorkers *workers;
   void *argv;

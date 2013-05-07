@@ -14,23 +14,25 @@
 #include <MapMem.h>
 
 namespace std {
+  class USRTWorkers;
+  enum threadState { CREATING, RUNNING, WAITING, KEEPER, EXITING };
+  struct structThread {
+    pthread_t tid;
+    volatile int control;
+    volatile enum threadState state;
+    int id;
+    USRTWorkers *workers;
+  };
   class USRTWorkers : USRTTask {
+    public:
     private:
       static int64 keeperKey;
       USRTTaskQueue *tQ;
       map<int64,USRTCapabilityBearer *> caps;
-      enum threadState { CREATING, RUNNING, WAITING, KEEPER, EXITING };
-      struct structThread {
-        pthread_t tid;
-        volatile int control;
-        volatile enum threadState state;
-        int id;
-        USRTWorkers *workers;
-      } **tids;
       raw_spinlock_t tidsLock;
       int threadNum;
       int control;
-
+      struct structThread **tids;
       void releaseThread();
       int holdThread();
       int stopThread( int k );
@@ -53,7 +55,7 @@ namespace std {
       void workerExit(){ control=-1; };
       void listCaps();
       void dumpQueue() { if( tQ ) tQ->dumpHeap(); };
-      void listThread() {}
+      void listThread() {};
   };
 }
 #endif //USRT_Workers_H

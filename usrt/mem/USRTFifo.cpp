@@ -68,7 +68,9 @@ int USRTFifo::len()
 void USRTFifo::start()
 { 
   __raw_spin_unlock(&(head->lockF));
+  fprintf(stderr,"Before Mem\n");
   USRTMem::start();
+  fprintf(stderr,"After Mem\n");
 }
 
 void USRTFifo::push( void* t )

@@ -33,12 +33,15 @@ namespace std {
   }
   void USRTWorkers::setQueue( const char *taskQueueName ) 
   {
-    if( tQ==NULL )
+    if( tQ==NULL ) {
       tQ = new USRTTaskQueue( taskQueueName );
+      tQ->start();
+    }
     else {
       if( holdThread() ) {
         delete tQ;
         tQ = new USRTTaskQueue( taskQueueName );
+        tQ->start();
       }
       else {
         fprintf(stderr,"hold thread failure, can not assign new Task Queue\n");
@@ -109,6 +112,7 @@ namespace std {
   void USRTWorkers::start(int n)
   {
     int i;
+    fprintf(stderr,"Start thread %d(%d)\n",n,threadNum);
     if( threadNum>n ) {
       struct structThread **ltids = new struct structThread *[n];
       for( i=0;i<n;i++ )
@@ -118,6 +122,7 @@ namespace std {
       struct structThread **ttids = tids;
       tids = ltids;
       delete ttids;
+      threadNum=n;
     }
     else
     {
@@ -128,7 +133,8 @@ namespace std {
       tids = ltids;
       delete ttids;
       for( i=threadNum;i<n;i++ )
-        runThread(i);  
+        runThread(i);
+      threadNum=n;  
     }
   }
   USRTCapabilityBearer *USRTWorkers::getBearerByKey( int64 key )
@@ -152,29 +158,30 @@ namespace std {
   {
     struct structThread *my = (struct structThread *)argv;
     fprintf(stderr,"Thread %d is start\n", my->id);
-    
     while( my->control!=-1 ) {
       while( my->control==1 ) {
         my->state=WAITING;
       }
+      my->state=RUNNING;
       task_t *t = my->workers->pop();
       USRTCapabilityBearer *bearer;
       if( t != NULL ) {
-        my->state=RUNNING;
         int64 capKey = t->key;
         bearer = my->workers->getBearerByKey(capKey);
         if( bearer != NULL ) {
           bearer->runGP( &(t->argv) );
-          bearer = my->workers->getBearerByKey(t->callback);
-          if( bearer != NULL )
-            bearer->runGP( &(t->mem) );
+          if( t->callback ) {
+            bearer = my->workers->getBearerByKey(t->callback);
+            if( bearer != NULL )
+              bearer->runGP( &(t->mem) );
+          }
         }
       }
       else {
         my->state=KEEPER;
         bearer = my->workers->getBearerByKey(keeperKey);
         if( bearer!=NULL )
-          bearer->runLP( &(my->workers->ctx) );
+          bearer->runLP( my );
       }
     }
     my->state=EXITING;
