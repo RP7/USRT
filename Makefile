@@ -1,6 +1,6 @@
 INC=include
 PINC=/usr/include/python2.7
-FLAG=-fPIC -fpermissive
+FLAG=-fPIC -fpermissive -Lwork
 LDFLAG=-ldl -lpthread
 
 work/libfun1.so:examples/fun1.cpp work/libcontainer.so examples/LTEDownLinkTransMock.c work/libmd5api.so
@@ -62,7 +62,7 @@ work/libmd5api.so: ${MD5LIBSRC}
 ExamplesCapabilities := $(wildcard examples/cap*.cpp)
 ExamplesLibs := $(patsubst %.cpp,%.so,$(subst examples/cap,work/lib,$(ExamplesCapabilities)))
 $(ExamplesLibs): %.so: $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/libmd5api.so
-	g++ -I${INC} ${FLAG} -shared -Lwork -lmd5api $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) work/libmd5api.so -o $@
+	g++ -I${INC} ${FLAG} -shared -Lwork $(patsubst %.so,%.cpp,$(subst work/lib,examples/cap,$@)) -o $@  -lmd5api
 example:$(ExamplesLibs)
 
 example1:work/libfun1.so work/libfun2.so work/libfun3.so work/libcontainerapi.so work/libmd5api.so $(LTELibs)
