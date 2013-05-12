@@ -36,6 +36,9 @@ int FUNCLASS::run( void *argv ) {
           fprintf(stderr,"Wait Heap is full\n");
           ctx->workers->tQueue()->push((void *)gpTask);
         }
+        if( put == -2 ) {
+          fprintf(stderr,"Task is invalid\n");
+        }  
       }
     }
     ctx->workers->tQueue()->update();

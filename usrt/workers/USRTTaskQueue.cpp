@@ -49,13 +49,16 @@ int USRTTaskQueue::heapCheck(struct structHeap& h, int debug )
 }
 
 void USRTTaskQueue::dumpTaskTime( task_t* a ) {
-  fprintf(stderr,"noE: %lld -- noL: %lld\n",a->noE,a->noL);
+  if( a==&card )
+    fprintf(stderr,"noE: %lld -- noL: %lld(card)\n",a->noE,a->noL);
+  else
+    fprintf(stderr,"noE: %lld -- noL: %lld\n",a->noE,a->noL);
 }
 void USRTTaskQueue::dumpHeap()
 {
-    fprintf(stderr,"Wait Heap\n");
+    fprintf(stderr,"Wait Heap lock: %d\n",wait.lock.slock);
     dumpHeap(wait);
-    fprintf(stderr,"Ready Heap\n");
+    fprintf(stderr,"Ready Heap lock:%d\n",ready.lock.slock);
     dumpHeap(ready);
 }
 void USRTTaskQueue::dumpHeap( struct structHeap& h ) {
@@ -69,19 +72,23 @@ void USRTTaskQueue::dumpHeap( struct structHeap& h ) {
 task_t* USRTTaskQueue::pop( struct structHeap& h )
 {
   FuncCompare func=h.func;
-  if( h.size==0 )
-    return NULL;
+  task_t* ret = NULL;
   __raw_spin_lock(&(h.lock));
-  task_t* ret = h.heap[0];
-  h.heap[0]=h.heap[h.size-1];
-  h.size--;
-  down(h,0);
+  if( h.size>0 ) {
+    ret = h.heap[0];
+    h.heap[0]=h.heap[h.size-1];
+    h.size--;
+    if( h.size>0 )
+      down(h,0);
+  }
   __raw_spin_unlock(&(h.lock));
   return ret;
 }
 
 void USRTTaskQueue::down(struct structHeap& h, int index )
 {
+  if( h.size<=index )
+    return;
   FuncCompare func=h.func;
   int left = index*2+1;
   int right = index*2+2;

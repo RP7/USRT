@@ -40,6 +40,7 @@ namespace std {
       void dumpThread( struct structThread *t ) {
         fprintf(stderr,"thread %d state:%d control:%d\n",t->id,(int)t->state,t->control);
         dumpMonitor( t->monitor );
+        tQueue()->dumpHeap();
       };
       void dumpThread() {
         for(int i=0;i<threadNum;i++ )

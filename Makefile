@@ -1,6 +1,6 @@
 INC=include
 PINC=/usr/include/python2.7
-FLAG=-fPIC -fpermissive -Lwork
+FLAG=-fPIC -fpermissive -Lwork -g
 LDFLAG=-ldl -lpthread
 
 work/libfun1.so:examples/fun1.cpp work/libcontainer.so examples/LTEDownLinkTransMock.c work/libmd5api.so
@@ -86,31 +86,31 @@ DUMPMEMSRC= \
   usrt/container/globe.c
   
 work/dumpMem:work/libUSRT.so work/libmd5api.so utils/dumpMem.cpp
-	g++ -I${INC} -Lwork  -lmd5api -o work/dumpMem utils/dumpMem.cpp work/libUSRT.so work/libmd5api.so $(LDFLAG)
+	g++ -I${INC} ${FLAG} -Lwork  -lmd5api -o work/dumpMem utils/dumpMem.cpp work/libUSRT.so work/libmd5api.so $(LDFLAG)
 
 work/heapcheck:usrt/workers/USRTTaskQueue.cpp work/libcontainer.so work/libmd5api.so
-	g++ -I${INC} -D__HEAPTEST -o work/heapcheck  usrt/workers/USRTTaskQueue.cpp work/libmd5api.so work/libcontainer.so 
+	g++ -I${INC} ${FLAG} -D__HEAPTEST -o work/heapcheck  usrt/workers/USRTTaskQueue.cpp work/libmd5api.so work/libcontainer.so 
 
 work/dumpQueue: utils/dumpQueue.cpp usrt/workers/USRTTaskQueue.cpp work/libcontainer.so work/libmd5api.so
-	g++ -I${INC} -o work/dumpQueue utils/dumpQueue.cpp usrt/workers/USRTTaskQueue.cpp work/libmd5api.so work/libcontainer.so 
+	g++ -I${INC} ${FLAG} -o work/dumpQueue utils/dumpQueue.cpp usrt/workers/USRTTaskQueue.cpp work/libmd5api.so work/libcontainer.so 
 
 work/dumpKey: utils/dumpCapKey.cpp work/libUSRT.so work/libmd5api.so
-	g++ -I${INC}  -o work/dumpKey utils/dumpCapKey.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
+	g++ -I${INC}  ${FLAG} -o work/dumpKey utils/dumpCapKey.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
 
 work/findCapByKey: utils/findCapByKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libUSRT.so work/libmd5api.so
-	g++ -I${INC}  -o work/findCapByKey utils/findCapByKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
+	g++ -I${INC}  ${FLAG} -o work/findCapByKey utils/findCapByKey.cpp usrt/workers/USRTCapabilityBearer.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
 
 work/keeperCheck: utils/keeperCheck.cpp work/libUSRT.so work/libmd5api.so
-	g++ -I${INC}  -o work/keeperCheck utils/keeperCheck.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
+	g++ -I${INC} ${FLAG} -o work/keeperCheck utils/keeperCheck.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
 
 work/workers: usrt/workers/workers.cpp work/libUSRT.so work/libmd5api.so
-	g++ -I${INC}  -o work/workers usrt/workers/workers.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
+	g++ -I${INC} ${FLAG} -o work/workers usrt/workers/workers.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
 
 work/configWorkers: utils/configWorkers.cpp work/libUSRT.so work/libmd5api.so
-	g++ -I${INC}  -o work/configWorkers utils/configWorkers.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
+	g++ -I${INC} ${FLAG} -o work/configWorkers utils/configWorkers.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
 
 work/pushTask: utils/pushTask.cpp work/libUSRT.so work/libmd5api.so
-	g++ -I${INC}  -o work/pushTask utils/pushTask.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
+	g++ -I${INC} ${FLAG} -o work/pushTask utils/pushTask.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
 
 UTILS = work/configWorkers \
   work/workers \

@@ -11,8 +11,8 @@ namespace std {
   class USRTTaskQueue : public USRTFifo {
     #define HEAPSIZE 256
     typedef int(*FuncCompare)(task_t*,task_t*);
-    public:
-      struct structHeap {
+    private:
+    struct structHeap {
         int size;
         raw_spinlock_t lock;
         task_t* heap[HEAPSIZE];
@@ -20,6 +20,7 @@ namespace std {
       };
       struct structHeap wait;
       struct structHeap ready;
+    public:
       struct structWorkersHead {
         struct structFifoHead fifo;
         int readySize;
