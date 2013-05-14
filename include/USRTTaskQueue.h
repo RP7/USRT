@@ -54,6 +54,9 @@ namespace std {
       void storeHeap();
       void restoreHeap();
       utime_t getNow();
+      void unLockWait() { __raw_spin_unlock(&(wait.lock)); };
+      void unLockReady() { __raw_spin_unlock(&(ready.lock)); };
+      
   };
 }
 #endif //USRT_Task_Queue_H

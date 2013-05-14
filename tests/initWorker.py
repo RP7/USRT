@@ -36,4 +36,4 @@ def configHello():
 configDef()
 configHello()
 configSetQueue("queue0")
-configStart(2)
+configStart(4)

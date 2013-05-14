@@ -62,7 +62,9 @@ USRTFifo::~USRTFifo()
 
 int USRTFifo::len()
 { 
-  return (head->sp-head->rp+FIFOSIZE)%FIFOSIZE;
+  int ret = (head->sp-head->rp+FIFOSIZE)%FIFOSIZE;
+//  fprintf(stderr,"Len(%s) = %d",head->mem.meta.name,ret);
+  return ret;
 }
 
 void USRTFifo::start()
