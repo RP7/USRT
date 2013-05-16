@@ -178,7 +178,7 @@ namespace std {
           }
         }
       }
-      else {
+      else if( my->id==0) {
         my->monitor.keeper++;
         my->state=KEEPER;
         bearer = my->workers->getBearerByKey(keeperKey);

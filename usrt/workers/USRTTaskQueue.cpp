@@ -54,15 +54,34 @@ void USRTTaskQueue::dumpTaskTime( task_t* a ) {
   else
     fprintf(stderr,"noE: %lld -- noL: %lld\n",a->noE,a->noL);
 }
+
 void USRTTaskQueue::dumpHeap()
 {
+#ifdef  CheckThreadLock
+    fprintf(stderr,"Wait Heap lock: ");
+    dumpLock(&(wait.lock));
+#else
     fprintf(stderr,"Wait Heap lock: %d\n",wait.lock.slock);
+#endif
     dumpHeap(wait);
+#ifdef  CheckThreadLock
+    fprintf(stderr,"Ready Heap lock: ");
+    dumpLock(&(ready.lock));
+#else
     fprintf(stderr,"Ready Heap lock:%d\n",ready.lock.slock);
+#endif
     dumpHeap(ready);
+#ifdef  CheckThreadLock
+    fprintf(stderr,"criticalArea lock: ");
+    dumpLock(&criticalArea);
+#else
+    fprintf(stderr,"criticalArea lock:%d\n",criticalArea.slock);
+#endif
+
 }
 void USRTTaskQueue::dumpHeap( struct structHeap& h ) {
   int i;
+  fprintf(stderr,"Heap Size %d\n",h.size);
   for( i=0;i<h.size;i++ ) {
     fprintf(stderr,"No %d: ",i);
     dumpTaskTime(h.heap[i]);
@@ -74,6 +93,7 @@ task_t* USRTTaskQueue::pop( struct structHeap& h )
   FuncCompare func=h.func;
   task_t* ret = NULL;
   __raw_spin_lock(&(h.lock));
+  dumpLock(&(h.lock));
   if( h.size>0 ) {
     ret = h.heap[0];
     h.heap[0]=h.heap[h.size-1];
@@ -240,7 +260,7 @@ void USRTTaskQueue::restoreHeap()
 int USRTTaskQueue::update() 
 {
   int cnt=0;
-  if( criticalArea.slock ) {
+  if( criticalArea.slock==1 ) {
     __raw_spin_lock(&criticalArea);
     card.noE = getNow();
     insert(wait,&card);

@@ -3,9 +3,24 @@
 typedef long long int64;
 typedef long long utime_t;
 
+#define CheckThreadLock
+
 typedef struct {
   unsigned int slock;
+#ifdef CheckThreadLock
+  long int tid;
+#endif
 } raw_spinlock_t;
+
+#ifdef CheckThreadLock
+#include <unistd.h>
+#include <stdio.h>
+//#include <sys/syscall.h>
+static inline void dumpLock( raw_spinlock_t* lock )
+{
+  fprintf(stderr,"lock = %d, tid = %ld\n",lock->slock,lock->tid);  
+} 
+#endif
 
 typedef struct structGeneralizedMemory {
   int64 memKey;
@@ -63,20 +78,26 @@ extern struct structGlobe globe;
 static inline void __raw_spin_lock(raw_spinlock_t *lock)
 {
   asm volatile("\n1:\t"
-         LOCK_PREFIX " ; decb %0\n\t"
+         LOCK_PREFIX " ; decl %0\n\t"
          "jns 3f\n"
          "2:\t"
          "rep;nop\n\t"
-         "cmpb $0,%0\n\t"
+         "cmpl $0,%0\n\t"
          "jle 2b\n\t"
          "jmp 1b\n"
          "3:\n\t"
          : "+m" (lock->slock) : : "memory");
+#ifdef CheckThreadLock
+  lock->tid=(long int)syscall(224);
+#endif
 }
 
 static inline void __raw_spin_unlock(raw_spinlock_t *lock)
 {
-  asm volatile("movb $1,%0" : "+m" (lock->slock) :: "memory");
+#ifdef CheckThreadLock
+  lock->tid=-1LL;
+#endif
+  asm volatile("movl $1,%0" : "+m" (lock->slock) :: "memory");
 }
 
 #endif
