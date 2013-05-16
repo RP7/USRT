@@ -3,7 +3,7 @@
 typedef long long int64;
 typedef long long utime_t;
 
-#define CheckThreadLock
+#undef CheckThreadLock
 
 typedef struct {
   unsigned int slock;
@@ -16,13 +16,18 @@ typedef struct {
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/syscall.h>
+#endif
+
 static inline void dumpLock( raw_spinlock_t* lock )
 {
+#ifdef CheckThreadLock
   int slock = lock->slock;
   long int tid = lock->tid;
   fprintf(stderr,"lock = %d, tid = %ld\n",slock,tid);  
-} 
+#else
+  
 #endif
+} 
 
 typedef struct structGeneralizedMemory {
   int64 memKey;
