@@ -15,10 +15,12 @@ typedef struct {
 #ifdef CheckThreadLock
 #include <unistd.h>
 #include <stdio.h>
-//#include <sys/syscall.h>
+#include <sys/syscall.h>
 static inline void dumpLock( raw_spinlock_t* lock )
 {
-  fprintf(stderr,"lock = %d, tid = %ld\n",lock->slock,lock->tid);  
+  int slock = lock->slock;
+  long int tid = lock->tid;
+  fprintf(stderr,"lock = %d, tid = %ld\n",slock,tid);  
 } 
 #endif
 
@@ -88,7 +90,7 @@ static inline void __raw_spin_lock(raw_spinlock_t *lock)
          "3:\n\t"
          : "+m" (lock->slock) : : "memory");
 #ifdef CheckThreadLock
-  lock->tid=(long int)syscall(224);
+  lock->tid=(long int)syscall(__NR_gettid);
 #endif
 }
 
