@@ -3,7 +3,7 @@
 typedef long long int64;
 typedef long long utime_t;
 
-#undef CheckThreadLock
+#define CheckThreadLock
 
 typedef struct {
   unsigned int slock;
