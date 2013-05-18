@@ -29,13 +29,21 @@ int main(int argc, char *argv[])
   
   int opt;
   USRTTaskQueue q;
-  while((opt=getopt(argc-1,argv+1,"t:k:c:n:d:r"))!=-1) {
+  utime_t now = q.getNow();
+  while((opt=getopt(argc-1,argv+1,"t:k:c:n:d:rm"))!=-1) {
     switch(opt) {
+      case 'm':
+        initMem("task1");
+        start("task1");
+        release("task1");
+        exit(0);
+        break;
+ 
       case 't':
         tName=optarg;
         break;
       case 'r':
-        *(int64 *)buf=q.getNow();
+        *(int64 *)buf=now;
         bufLen=8;
         break;
       case 'k':
@@ -64,8 +72,7 @@ int main(int argc, char *argv[])
     }
   }
   fprintf(stderr,"Run: %llx -t %s \n",capKey,tName);
-  initMem("task1");
-  start("task1");
+  attach("task1");
   q.attach(tName);
   void *a = allocMem("task1",((bufLen+16)/16)*16);
   memset(a,0,bufLen+16);
@@ -74,7 +81,7 @@ int main(int argc, char *argv[])
   task_t *task = allocTask("task1",1LL);
   L2G(&(task->argv),a);
   task->key = capKey;
-  task->noL = q.getNow()+(long long int)delay;
+  task->noL = now+(long long int)delay;
   task->noE = task->noL;
   fprintf(stderr,"prepare task %lld\n",task->noE);
   void *vgp = q.allocMem(sizeof(generalized_memory_t));

@@ -283,11 +283,13 @@ int USRTTaskQueue::update()
 }
 utime_t USRTTaskQueue::getNow()
 {
-	struct timeval tv;
+/*	struct timeval tv;
 	gettimeofday(&tv,0);
 	utime_t now = (utime_t)tv.tv_sec*1000000;
 	now += (utime_t)tv.tv_usec;
 	return now;
+*/
+  return __getNow();
 }
 
 }

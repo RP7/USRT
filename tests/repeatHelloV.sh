@@ -1,5 +1,7 @@
 #!/bin/bash
 
+work/pushTask HelloV -m
+
 declare -i s=0
 while true
 do

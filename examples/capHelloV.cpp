@@ -10,12 +10,9 @@
 using namespace std;
 
 int FUNCLASS::run( void *argv ) {
-  struct timeval tv;
-	gettimeofday(&tv,0);
-	utime_t now = (utime_t)tv.tv_sec*1000000;
-	now += (utime_t)tv.tv_usec;
+  utime_t now = __getNow();
   utime_t run = *(utime_t *)argv;
-  fprintf(stderr,"%ld\n",run-now);
+  fprintf(stderr,"%lld %lld %lld\n",run-now,run,now);
   return 0;
 }
 

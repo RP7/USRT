@@ -33,7 +33,14 @@ def configHello():
   cmd.append("libHello.so")
   sub.Popen(cmd)
 
+def configHelloV():
+  cmd = configSet( "SetCap" )
+  cmd.append("-c")
+  cmd.append("libHelloV.so")
+  sub.Popen(cmd)
+
 configDef()
 configHello()
+configHelloV()
 configSetQueue("queue0")
 configStart(4)
