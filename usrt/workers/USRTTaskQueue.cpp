@@ -263,19 +263,20 @@ int USRTTaskQueue::update()
   if( criticalArea.slock==1 ) {
     __raw_spin_lock(&criticalArea);
     card.noE = getNow();
-    insert(wait,&card);
-    task_t *t;
-    while( ready.size<HEAPSIZE-1 ) {
-      t=pop(wait);
-      if( t==NULL )
-        break;
-      if( t==&card )
-        break;
-      insert(ready,t);
-      cnt++;
+    if( insert(wait,&card)==0 ) {
+      task_t *t;
+      while( ready.size<HEAPSIZE-1 ) {
+        t=pop(wait);
+        if( t==NULL )
+          break;
+        if( t==&card )
+          break;
+        insert(ready,t);
+        cnt++;
+      }
+      if( t!=&card )
+        del(wait,&card);
     }
-    if( t!=&card )
-      del(wait,&card);
     __raw_spin_unlock(&criticalArea);
   }    
   return cnt;

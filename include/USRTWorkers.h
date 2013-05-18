@@ -64,6 +64,7 @@ namespace std {
       USRTTaskQueue *tQueue() { return tQ; };
       void defaultKeeper( struct WorkerKeeperCTX *ctx );
       USRTCapabilityBearer *getBearerByKey( int64 key );
+      void removeBearerByKey( int64 key );
       ~USRTWorkers();
       task_t* pop();
       void setCap(const char*);

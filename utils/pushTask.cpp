@@ -28,10 +28,15 @@ int main(int argc, char *argv[])
   capKey = md5first( cap );
   
   int opt;
-  while((opt=getopt(argc-1,argv+1,"t:k:c:n:d:"))!=-1) {
+  USRTTaskQueue q;
+  while((opt=getopt(argc-1,argv+1,"t:k:c:n:d:r"))!=-1) {
     switch(opt) {
       case 't':
         tName=optarg;
+        break;
+      case 'r':
+        *(int64 *)buf=q.getNow();
+        bufLen=8;
         break;
       case 'k':
         sscanf(optarg,"%llx",&key);
@@ -52,14 +57,13 @@ int main(int argc, char *argv[])
         sscanf(optarg,"%d",&delay);
         break;
       default:
-        fprintf(stderr,"Usage: %s(%c) capability [-t taskMem] [-k key] [-c string] [-n num] [-d delay]\n",
+        fprintf(stderr,"Usage: %s(%c) capability [-t taskMem] [-k key] [-c string] [-n num] [-d delay] [-r]\n",
                     argv[0],opt);
         exit(EXIT_FAILURE);
         break;
     }
   }
   fprintf(stderr,"Run: %llx -t %s \n",capKey,tName);
-  USRTTaskQueue q;
   initMem("task1");
   start("task1");
   q.attach(tName);

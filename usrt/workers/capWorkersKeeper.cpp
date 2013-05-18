@@ -28,7 +28,7 @@ int FUNCLASS::run( void *argv ) {
     int length;
     while( (length=ctx->workers->tQueue()->len())>0 ) {
       
-      fprintf(stderr,"Queue has %d task\n",length);
+//      fprintf(stderr,"Queue has %d task\n",length);
       generalized_memory_t *gpTask = (generalized_memory_t *)ctx->workers->tQueue()->get();
       if( gpTask != NULL ) {
         int put = ctx->workers->tQueue()->insert( gpTask );

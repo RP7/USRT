@@ -146,6 +146,17 @@ namespace std {
     else
       return NULL; 
   }
+  void USRTWorkers::removeBearerByKey( int64 key )
+  {
+    map<int64,USRTCapabilityBearer *>::iterator iter;
+    iter = caps.find( key );
+    if( iter != caps.end() ) {
+      USRTCapabilityBearer * capToBeDel = iter->second;
+      caps.erase (iter);
+      sleep(1);
+      delete capToBeDel;
+    }
+  }
   void USRTWorkers::listCaps()
   {
     map<int64,USRTCapabilityBearer *>::iterator iter;
