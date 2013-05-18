@@ -2,7 +2,7 @@
 
 while true
 do
-	work/pushTask Hello -d 2000000;
+	work/pushTask Hello -d 20000;
 	sleep 1;
 done
 

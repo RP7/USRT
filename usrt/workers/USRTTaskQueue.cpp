@@ -93,7 +93,7 @@ task_t* USRTTaskQueue::pop( struct structHeap& h )
   FuncCompare func=h.func;
   task_t* ret = NULL;
   __raw_spin_lock(&(h.lock));
-  dumpLock(&(h.lock));
+  //dumpLock(&(h.lock));
   if( h.size>0 ) {
     ret = h.heap[0];
     h.heap[0]=h.heap[h.size-1];

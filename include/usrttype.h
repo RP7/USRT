@@ -3,7 +3,7 @@
 typedef long long int64;
 typedef long long utime_t;
 
-#define CheckThreadLock
+#undef CheckThreadLock
 
 typedef struct {
   unsigned int slock;
@@ -81,7 +81,25 @@ extern struct structGlobe globe;
 #else /* ! CONFIG_SMP */
 #define LOCK_PREFIX ""
 #endif
-
+static inline void __raw_spin_lock(raw_spinlock_t *lock) {
+   asm("\n"
+       "1:\t" "lock;" "decl %0\n\t"
+       "jne 2f\n\t"
+       ".subsection 1\n\t"
+       ".align 16\n"
+       "2:\trep; nop\n\t"
+       "cmpl $0, %0\n\t"
+       "jg 1b\n\t"
+       "jmp 2b\n\t"
+       ".previous"
+       : "=m" (lock->slock)
+       : "m" (lock->slock)
+        );
+#ifdef CheckThreadLock
+  lock->tid=(long int)syscall(__NR_gettid);
+#endif
+}        
+/*
 static inline void __raw_spin_lock(raw_spinlock_t *lock)
 {
   asm volatile("\n1:\t"
@@ -98,7 +116,7 @@ static inline void __raw_spin_lock(raw_spinlock_t *lock)
   lock->tid=(long int)syscall(__NR_gettid);
 #endif
 }
-
+*/
 static inline void __raw_spin_unlock(raw_spinlock_t *lock)
 {
 #ifdef CheckThreadLock
