@@ -8,4 +8,5 @@ extern "C" {
   void log(int level,const char * format, ...); 
   void dumpLog( int level ); 
   void clearLog();
+  void dumpLog2stdout( int level );
 };

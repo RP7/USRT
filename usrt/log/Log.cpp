@@ -66,6 +66,13 @@ extern "C" {
     while( _globeLog[level]->len()>0 )
       fprintf(stderr,"%s",_globeLog[level]->get());  
   }
+  void dumpLog2stdout( int level ) 
+  {
+    if( _globeLog[level]==NULL )
+      attachLog(level);
+    while( _globeLog[level]->len()>0 )
+      fprintf(stdout,"%s",_globeLog[level]->get());  
+  }
 };// extern "C"
 
 };//namespace std

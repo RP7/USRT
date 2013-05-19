@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     {
       if( (1<<i)&mask ) {
         fprintf(stderr,"Log %d:\n",i);
-        dumpLog(i);
+        dumpLog2stdout(i);
       }
     }
   }
