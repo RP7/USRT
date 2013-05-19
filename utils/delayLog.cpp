@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
   map<int,int>::iterator iter;
   int read;
   int cnt=0;
+  int all=num;
   while( num-- ) {
       while( (log = getLog(level))==NULL );
       int read;
@@ -37,7 +38,7 @@ int main(int argc, char *argv[])
   cnt=0;
   int valid=0;
   for( iter=s.begin();iter!=s.end();iter++ ) {
-    fprintf(stdout,"%lf %d\n",(double)iter->first/2667.0,iter->second);
+    fprintf(stdout,"%lf %lf %d\n",(double)iter->first/2667.0,(double)cnt/(double)all,iter->second);
     if( iter->first>-2667*3 )
       valid+=iter->second;
     cnt+=iter->second;
