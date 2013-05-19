@@ -12,6 +12,8 @@
 #include <USRTCapabilityBearer.h>
 #include <USRTWorkersKeeper.h>
 #include <MapMem.h>
+#include <unistd.h>
+#include <sys/syscall.h>
 
 namespace std {
   class USRTWorkers;
@@ -30,6 +32,7 @@ namespace std {
     int id;
     struct structThreadMonitor monitor;
     USRTWorkers *workers;
+    long int sysid;
   };
   class USRTWorkers : USRTTask {
     private:
@@ -38,7 +41,7 @@ namespace std {
       };
     public:
       void dumpThread( struct structThread *t ) {
-        fprintf(stderr,"thread %d state:%d control:%d\n",t->id,(int)t->state,t->control);
+        fprintf(stderr,"thread %d state:%d control:%d tid:%d\n",t->id,(int)t->state,t->control,t->sysid);
         dumpMonitor( t->monitor );
       };
       void dumpThread() {

@@ -169,6 +169,7 @@ namespace std {
   {
     struct structThread *my = (struct structThread *)argv;
     fprintf(stderr,"Thread %d is start\n", my->id);
+    my->sysid=(long int)syscall(__NR_gettid);
     while( my->control!=-1 ) {
       while( my->control==1 ) {
         my->state=WAITING;
