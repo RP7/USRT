@@ -36,6 +36,7 @@ USRTSRC = 	usrt/mem/MapMem.cpp \
 						usrt/workers/USRTCapabilityBearer.cpp \
 						usrt/mem/USRTMem.cpp \
 						usrt/mem/USRTFifo.cpp \
+						usrt/log/Log.cpp \
 						usrt/container/ukey.c \
 						usrt/container/globe.c
 
@@ -112,13 +113,21 @@ work/configWorkers: utils/configWorkers.cpp work/libUSRT.so work/libmd5api.so
 work/pushTask: utils/pushTask.cpp work/libUSRT.so work/libmd5api.so
 	g++ -I${INC} ${FLAG} -o work/pushTask utils/pushTask.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
 
+work/initLog: utils/initLog.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC} ${FLAG} -o work/initLog utils/initLog.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
+
+work/dumpLog: utils/dumpLog.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC} ${FLAG} -o work/dumpLog utils/dumpLog.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
+
 UTILS = work/configWorkers \
   work/workers \
   work/findCapByKey \
   work/dumpKey \
   work/keeperCheck \
   work/pushTask \
-  work/dumpMem
+  work/dumpMem \
+  work/initLog \
+  work/dumpLog
   
 
 worker:$(WorkersInternalLibs) $(UTILS)

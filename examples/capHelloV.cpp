@@ -6,13 +6,14 @@
 #include <stdio.h>
 #include <sys/syscall.h>
 #include <sys/time.h>
+#include <Log.h>
 
 using namespace std;
 
 int FUNCLASS::run( void *argv ) {
   utime_t now = __getNow();
   utime_t run = *(utime_t *)argv;
-  fprintf(stdout,"%lld %lld %lld %lf\n",run-now,run,now,(double)now/2.667e9);
+  log(INFO,"%lld %lld %lld %lf\n",run-now,run,now,(double)now/2.667e9);
   return 0;
 }
 
