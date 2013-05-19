@@ -12,7 +12,7 @@ using namespace std;
 int FUNCLASS::run( void *argv ) {
   utime_t now = __getNow();
   utime_t run = *(utime_t *)argv;
-  fprintf(stderr,"%lld %lld %lld\n",run-now,run,now);
+  fprintf(stdout,"%lld %lld %lld %lf\n",run-now,run,now,(double)now/2.667e9);
   return 0;
 }
 
