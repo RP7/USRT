@@ -37,9 +37,15 @@ int main(int argc, char *argv[])
     for( i=0;i<MAXLogLevel;i++ )
     {
       if( (1<<i)&mask ) {
-        fprintf(stderr,"Log %d:\n",i);
+//        fprintf(stderr,"Log %d:\n",i);
         dumpLog2stdout(i);
       }
+    }
+  }
+  for( i=0;i<MAXLogLevel;i++ )
+  {
+    if( (1<<i)&mask ) {
+      releaseLog(i);
     }
   }
   return 0;    

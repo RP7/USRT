@@ -11,6 +11,7 @@
 using namespace std;
 
 int FUNCLASS::run( void *argv ) {
+  if( argv==NULL ) return -1;
   utime_t now = __getNow();
   utime_t run = *(utime_t *)argv;
   log(INFO,"%lld %lld %lld %lf\n",run-now,run,now,(double)now/2.667e9);

@@ -26,8 +26,6 @@ int main(int argc, char *argv[])
       int read;
       int ret=sscanf(log,"%d",&read);
       read+=delay;
- //     if( read>1000000 ) read=1000000;
- //     if( read<-100000 ) read=-100000;
       iter = s.find(read);
       if( iter==s.end() )
         s[read]=1;
@@ -37,10 +35,14 @@ int main(int argc, char *argv[])
       cnt++;
   }
   cnt=0;
+  int valid=0;
   for( iter=s.begin();iter!=s.end();iter++ ) {
-    fprintf(stdout,"%d %d\n",iter->first,iter->second);
+    fprintf(stdout,"%lf %d\n",(double)iter->first/2667.0,iter->second);
+    if( iter->first>-2667*3 )
+      valid+=iter->second;
     cnt+=iter->second;
   }
-  fprintf(stderr,"total:%d\n",cnt);
+  fprintf(stderr,"total:%d valid:%lf\n",cnt,(double)valid/(double)cnt);
+  releaseLog(level);
   return 0;    
 }

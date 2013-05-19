@@ -33,8 +33,8 @@ int FUNCLASS::run( void *argv ) {
       if( gpTask != NULL ) {
         int put = ctx->workers->tQueue()->insert( gpTask );
         if( put == -1 ) {
-          fprintf(stderr,"Wait Heap is full\n");
-          ctx->workers->tQueue()->push((void *)gpTask);
+//          fprintf(stderr,"Wait Heap is full\n");
+//          ctx->workers->tQueue()->push((void *)gpTask);
         }
         if( put == -2 ) {
           fprintf(stderr,"Task is invalid\n");

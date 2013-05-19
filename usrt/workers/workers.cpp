@@ -6,6 +6,7 @@
 int main( int argc, char *argv[] )
 {
   clearLog();
+  attachLog(6);
   std::USRTWorkers *workers = new std::USRTWorkers( argv[1] );
   workers->mainWorker( workers );
 }

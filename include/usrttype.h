@@ -60,7 +60,7 @@ typedef struct structKey {
   short session;
 } ukey_t;
 
-#define FIFOSIZE 256
+#define FIFOSIZE (256*256)
 #define METASIZE 256
 
 struct structGlobe {

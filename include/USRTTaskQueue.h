@@ -9,7 +9,7 @@
 
 namespace std {
   class USRTTaskQueue : public USRTFifo {
-    #define HEAPSIZE 256
+    #define HEAPSIZE FIFOSIZE
     typedef int(*FuncCompare)(task_t*,task_t*);
     private:
     struct structHeap {
