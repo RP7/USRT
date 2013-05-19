@@ -1,6 +1,6 @@
 INC=include
 PINC=/usr/include/python2.7
-FLAG=-fPIC -fpermissive -Lwork -g
+FLAG=-fPIC -fpermissive -Lwork 
 LDFLAG=-ldl -lpthread
 
 work/libfun1.so:examples/fun1.cpp work/libcontainer.so examples/LTEDownLinkTransMock.c work/libmd5api.so
@@ -119,6 +119,10 @@ work/initLog: utils/initLog.cpp work/libUSRT.so work/libmd5api.so
 work/dumpLog: utils/dumpLog.cpp work/libUSRT.so work/libmd5api.so
 	g++ -I${INC} ${FLAG} -o work/dumpLog utils/dumpLog.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
 
+work/delayLog: utils/delayLog.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC} ${FLAG} -o work/delayLog utils/delayLog.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
+
+
 UTILS = work/configWorkers \
   work/workers \
   work/findCapByKey \
@@ -127,7 +131,8 @@ UTILS = work/configWorkers \
   work/pushTask \
   work/dumpMem \
   work/initLog \
-  work/dumpLog
+  work/dumpLog \
+  work/delayLog
   
 
 worker:$(WorkersInternalLibs) $(UTILS)

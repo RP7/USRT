@@ -76,6 +76,11 @@ void USRTFifo::start()
 void USRTFifo::push( void* t )
 {
   __raw_spin_lock(&(head->lockF));
+  if( len()==FIFOSIZE-1 ) {
+    head->rp++;
+    if( head->rp>=FIFOSIZE )
+      head->rp = 0;
+  }
   head->fifo[head->sp]=getOff(t);
   head->sp++;
   if( head->sp>=FIFOSIZE )

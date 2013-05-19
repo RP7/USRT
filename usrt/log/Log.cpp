@@ -54,7 +54,7 @@ extern "C" {
     vsnprintf (buffer,1023,format, args);
     va_end (args);
     buffer[1023]='\0';
-    int lenLog = strlen(buffer);
+    int lenLog = strlen(buffer)+1;
     void *mem = _globeLog[level]->allocMem((long long int)lenLog);
     memcpy(mem,buffer,lenLog);
     _globeLog[level]->push(mem);
@@ -63,15 +63,17 @@ extern "C" {
   {
     if( _globeLog[level]==NULL )
       attachLog(level);
-    while( _globeLog[level]->len()>0 )
-      fprintf(stderr,"%s",_globeLog[level]->get());  
+    const char *l;
+    while( (l=_globeLog[level]->get())!=NULL )
+      fprintf(stderr,"%s",l);  
   }
   void dumpLog2stdout( int level ) 
   {
     if( _globeLog[level]==NULL )
       attachLog(level);
-    while( _globeLog[level]->len()>0 )
-      fprintf(stdout,"%s",_globeLog[level]->get());  
+    const char *l;
+    while( (l=_globeLog[level]->get())!=NULL )
+      fprintf(stdout,"%s",l);  
   }
 };// extern "C"
 
