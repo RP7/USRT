@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   L2G(&(task->argv),a);
   task->key = capKey;
   task->noL = now+(long long int)delay;
-  task->noE = task->noL;
+  task->noE = task->noL-3LL*2667LL;
   fprintf(stderr,"prepare task %lld\n",task->noE);
   void *vgp = q.allocMem(sizeof(generalized_memory_t));
   memcpy( vgp, &(task->mem), sizeof(generalized_memory_t) );
