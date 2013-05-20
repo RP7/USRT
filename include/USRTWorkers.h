@@ -41,7 +41,7 @@ namespace std {
       };
     public:
       void dumpThread( struct structThread *t ) {
-        fprintf(stderr,"thread %d state:%d control:%d tid:%d\n",t->id,(int)t->state,t->control,t->sysid);
+        fprintf(stderr,"thread %d state:%d control:%d tid:%ld\n",t->id,(int)t->state,t->control,t->sysid);
         dumpMonitor( t->monitor );
       };
       void dumpThread() {

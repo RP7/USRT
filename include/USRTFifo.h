@@ -29,6 +29,7 @@ class USRTFifo : public USRTMem {
     void start();
     void dumpHead();
     void push( void *t );
+    void pushOff( long long t );
     void* get();
     struct structFifoHead * getHead() {return head;};
 };

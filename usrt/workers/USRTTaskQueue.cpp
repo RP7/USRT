@@ -4,6 +4,8 @@
 #include <sys/time.h>
 #include <USRTTaskQueue.h>
 #include <MapMem.h>
+#include <trace.h>
+#include <USRTWorkers.h>
 
 namespace std {
 
@@ -256,6 +258,36 @@ void USRTTaskQueue::restoreHeap()
   for( i=0;i<ready.size;i++ ) {
     dumpGM( head->gmReady[i] );
   }
+}
+
+int USRTTaskQueue::updateTrace( void *vthread ) 
+{
+  struct structThread* thread = (struct structThread*)vthread;
+  int cnt=0;
+  if( criticalArea.slock==1 ) {
+    __raw_spin_lock(&criticalArea);
+    card.noE = getNow();
+    if( insert(wait,&card)==0 ) {
+      task_t *t;
+      while( ready.size<HEAPSIZE-1 ) {
+        t=pop(wait);
+        if( t==NULL )
+          break;
+        if( t==&card )
+          break;
+        _trace_t *trace = (_trace_t *)G2L(&(t->argv));
+        trace->update=thread->sysid;
+        trace->wait=__getNow();
+        insert(ready,t);
+        trace->ready=__getNow();
+        cnt++;
+      }
+      if( t!=&card )
+        del(wait,&card);
+    }
+    __raw_spin_unlock(&criticalArea);
+  }    
+  return cnt;
 }
 int USRTTaskQueue::update() 
 {

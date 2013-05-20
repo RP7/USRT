@@ -34,9 +34,9 @@ extern "C" {
     return 0;
   }  
   
-  const char* getLog( int level )
+  void* getLog( int level )
   {
-    return (const char* )_globeLog[level]->get();
+    return (void *)_globeLog[level]->get();
   }
   
   void releaseLog(int level)
@@ -59,6 +59,20 @@ extern "C" {
     memcpy(mem,buffer,lenLog);
     _globeLog[level]->push(mem);
   }
+  void pushOffLog( int level, long long int t )
+  {
+    _globeLog[level]->pushOff(t);
+  }
+  void *allocLog( int level, int len )
+  {
+    if( _globeLog[level]==NULL ) return NULL;
+    return _globeLog[level]->allocMem((long long)len);
+  }
+  long long int L2GLog(int level, void *l)
+  {
+    if( _globeLog[level]==NULL ) return -1LL;
+    return _globeLog[level]->getOff(l);
+  } 
   void dumpLog( int level ) 
   {
     if( _globeLog[level]==NULL )
@@ -74,6 +88,11 @@ extern "C" {
     const char *l;
     while( (l=_globeLog[level]->get())!=NULL )
       fprintf(stdout,"%s",l);  
+  }
+  long long int keyOfLog( int level )
+  {
+    if( _globeLog[level]==NULL ) return 0LL;    
+    return _globeLog[level]->getKey();
   }
 };// extern "C"
 

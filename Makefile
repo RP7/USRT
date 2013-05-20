@@ -125,6 +125,11 @@ work/delayLog: utils/delayLog.cpp work/libUSRT.so work/libmd5api.so
 work/multiTask: utils/multiTask.cpp work/libUSRT.so work/libmd5api.so
 	g++ -I${INC} ${FLAG} -o work/multiTask utils/multiTask.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
 
+work/multiTrace: utils/multiTrace.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC} ${FLAG} -o work/multiTrace utils/multiTrace.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
+
+work/dumpTrace: utils/dumpTrace.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC} ${FLAG} -o work/dumpTrace utils/dumpTrace.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
 
 UTILS = work/configWorkers \
   work/workers \
@@ -136,7 +141,10 @@ UTILS = work/configWorkers \
   work/initLog \
   work/dumpLog \
   work/delayLog \
-  work/multiTask
+  work/multiTask \
+  work/multiTrace \
+  work/dumpTrace
+
   
 
 worker:$(WorkersInternalLibs) $(UTILS)

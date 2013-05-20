@@ -48,6 +48,7 @@ namespace std {
       int insert( generalized_memory_t* a );
       task_t* pop( ){ return pop( ready ); };
       int update();
+      int updateTrace(void* thread);
       void dumpTaskTime( task_t * a );
       void dumpHeap(struct structHeap& h);
       void dumpHeap();
