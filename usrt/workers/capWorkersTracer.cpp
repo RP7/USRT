@@ -24,7 +24,7 @@ int FUNCLASS::run( void *argv ) {
 	  printf("thread %d can not get Queue\n",my->id);
 	  return;
 	}
-  if( ctx->keeperLock.slock ) {
+  if( ctx->keeperLock.slock==1 ) {
     __raw_spin_lock(&(ctx->keeperLock));
     int length;
     while( (length=ctx->workers->tQueue()->len())>0 ) {
