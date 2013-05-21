@@ -1,0 +1,10 @@
+sudo cset shield -c 4-7
+sudo cset shield -k on
+sudo cset set -v -c 4 /user/worker0
+sudo cset set -v -c 5 /user/worker1
+sudo cset set -v -c 6 /user/worker2
+sudo cset set -v -c 7 /user/worker3
+sudo cset proc -m -p 2603 -v -t user/worker0
+chrt -f -p 2603
+sudo renice -n -20 -p 2603
+...
