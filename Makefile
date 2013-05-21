@@ -131,6 +131,9 @@ work/multiTrace: utils/multiTrace.cpp work/libUSRT.so work/libmd5api.so
 work/dumpTrace: utils/dumpTrace.cpp work/libUSRT.so work/libmd5api.so
 	g++ -I${INC} ${FLAG} -o work/dumpTrace utils/dumpTrace.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
 
+work/delayTrace: utils/delayTrace.cpp work/libUSRT.so work/libmd5api.so
+	g++ -I${INC} ${FLAG} -o work/delayTrace utils/delayTrace.cpp work/libmd5api.so work/libUSRT.so $(LDFLAG)
+
 UTILS = work/configWorkers \
   work/workers \
   work/findCapByKey \
@@ -143,7 +146,8 @@ UTILS = work/configWorkers \
   work/delayLog \
   work/multiTask \
   work/multiTrace \
-  work/dumpTrace
+  work/dumpTrace \
+  work/delayTrace
 
   
 
