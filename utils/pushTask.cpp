@@ -8,6 +8,7 @@
 #include <MapMem.h>
 #include <md5api.h>
 #include <unistd.h>
+#include <callback.h>
 
 using namespace std;
 int main(int argc, char *argv[])
@@ -22,7 +23,8 @@ int main(int argc, char *argv[])
   int bufLen=0; 
   tName=task0;
   int delay = 0;
-  
+  int intl = 1;
+  int cnt = 1;
   strcpy( cap, "cap" );
   strcat( cap, argv[1] );
   capKey = md5first( cap );
@@ -30,7 +32,7 @@ int main(int argc, char *argv[])
   int opt;
   USRTTaskQueue q;
   utime_t now = q.getNow();
-  while((opt=getopt(argc-1,argv+1,"t:k:c:n:d:rm"))!=-1) {
+  while((opt=getopt(argc-1,argv+1,"j:i:t:k:c:n:d:rm"))!=-1) {
     switch(opt) {
       case 'm':
         initMem("task1");
@@ -61,11 +63,17 @@ int main(int argc, char *argv[])
         *(int *)buf=num;
         bufLen=4;
         break;
+      case 'i':
+        sscanf(optarg,"%d",&intl);
+        break;
+      case 'j':
+        sscanf(optarg,"%d",&cnt);
+        break;
       case 'd':
         sscanf(optarg,"%d",&delay);
         break;
       default:
-        fprintf(stderr,"Usage: %s(%c) capability [-t taskMem] [-k key] [-c string] [-n num] [-d delay] [-r]\n",
+        fprintf(stderr,"Usage: %s(%c) capability [-t taskMem] [-k key] [-c string] [-n num] [-d delay] [-i intl] [-j cnt] [-r] [-m]\n",
                     argv[0],opt);
         exit(EXIT_FAILURE);
         break;
@@ -84,6 +92,7 @@ int main(int argc, char *argv[])
   task->noL = now+(long long int)delay;
   task->noE = task->noL-3LL*2667LL;
   fprintf(stderr,"prepare task %lld\n",task->noE);
+  setCallBackRepeat(task,intl,cnt,obj);
   void *vgp = q.allocMem(sizeof(generalized_memory_t));
   memcpy( vgp, &(task->mem), sizeof(generalized_memory_t) );
   q.push(vgp);

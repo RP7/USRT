@@ -185,8 +185,10 @@ namespace std {
           bearer->runGP( &(t->argv) );
           if( t->callback ) {
             bearer = my->workers->getBearerByKey(t->callback);
-            if( bearer != NULL )
-              bearer->runGP( &(t->mem) );
+            if( bearer != NULL ) {
+              t->callbackargv.pQ = my->workers->tQueue();
+              bearer->runLP( t );
+            }
           }
         }
       }

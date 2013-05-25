@@ -36,6 +36,22 @@ typedef struct structGeneralizedMemory {
   int64 check;
 } generalized_memory_t;
 
+enum CBMode { none, abss, me, obj, extwait, extmulti };
+typedef struct __callback_argv {
+  enum CBMode mode;
+  int delay;
+  int cnt;
+  int argv;
+  void *pQ;
+  generalized_memory_t gp;
+} _callback_argv_t;
+
+typedef struct __callback_wait {
+  raw_spinlock_t lock;
+  int cnt;
+  _callback_argv_t argv;
+} _callback_wait_t;
+
 typedef struct structTask {
   int64 ID;
   int64 key;
@@ -43,6 +59,7 @@ typedef struct structTask {
   int64 to;
   generalized_memory_t argv;
   int64 callback;
+  _callback_argv_t callbackargv;
   utime_t noE;
   utime_t noL;
   utime_t valid;
