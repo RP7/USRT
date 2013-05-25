@@ -9,7 +9,8 @@
 using namespace std;
 
 int FUNCLASS::run( void *argv ) {
-  fprintf(stderr,"Hello world form %ld\n",(long int)syscall(__NR_gettid));
+  int num = *(int *)argv;
+  fprintf(stderr,"Hello world(%d) form %ld\n",num,(long int)syscall(__NR_gettid));
   return 0;
 }
 

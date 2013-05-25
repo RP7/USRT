@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
   task->noE = task->noL-3LL*2667LL;
   fprintf(stderr,"prepare task %lld\n",task->noE);
   setCallBackRepeat(task,intl,cnt,obj);
+  fprintf(stderr,"callback cnt=%d intl=%d\n",cnt,intl);
   void *vgp = q.allocMem(sizeof(generalized_memory_t));
   memcpy( vgp, &(task->mem), sizeof(generalized_memory_t) );
   q.push(vgp);
