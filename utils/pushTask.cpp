@@ -9,6 +9,7 @@
 #include <md5api.h>
 #include <unistd.h>
 #include <callback.h>
+#include <trace.h>
 
 using namespace std;
 int main(int argc, char *argv[])
@@ -32,7 +33,9 @@ int main(int argc, char *argv[])
   int opt;
   USRTTaskQueue q;
   utime_t now = q.getNow();
-  while((opt=getopt(argc-1,argv+1,"j:i:t:k:c:n:d:rm"))!=-1) {
+  _trace_t *aLog = NULL;
+  int log = 0;
+  while((opt=getopt(argc-1,argv+1,"j:i:t:k:c:n:d:rml"))!=-1) {
     switch(opt) {
       case 'm':
         initMem("task1");
@@ -72,6 +75,9 @@ int main(int argc, char *argv[])
       case 'd':
         sscanf(optarg,"%d",&delay);
         break;
+      case 'l':
+        log=1;
+        break;
       default:
         fprintf(stderr,"Usage: %s(%c) capability [-t taskMem] [-k key] [-c string] [-n num] [-d delay] [-i intl] [-j cnt] [-r] [-m]\n",
                     argv[0],opt);
@@ -80,19 +86,28 @@ int main(int argc, char *argv[])
     }
   }
   fprintf(stderr,"Run: %llx -t %s \n",capKey,tName);
-  attach("task1");
   q.attach(tName);
-  void *a = allocMem("task1",((bufLen+16)/16)*16);
-  memset(a,0,bufLen+16);
-  memcpy(a,buf,bufLen);
-  fprintf(stderr,"prepare args\n");
+  attach("task1");
   task_t *task = allocTask("task1",1LL);
-  L2G(&(task->argv),a);
+  if( log == 0 ) {
+    void *a = allocMem("task1",((bufLen+16)/16)*16);
+    memset(a,0,bufLen+16);
+    memcpy(a,buf,bufLen);
+    fprintf(stderr,"prepare args\n");
+    L2G(&(task->argv),a);
+  } 
+  else {
+    aLog = (_trace_t *)allocMem("task1",sizeof(_trace_t));
+    aLog->lunch=__getNow();
+    aLog->delay=(long long int)delay;
+    L2G(&(task->argv),aLog);
+    fprintf(stderr,"prepare trace\n");
+  }
   task->key = capKey;
   task->noL = now+(long long int)delay;
   task->noE = task->noL-3LL*2667LL;
   fprintf(stderr,"prepare task %lld\n",task->noE);
-  setCallBackRepeat(task,intl,cnt,obj);
+  setCallBackRepeat(task,intl,cnt,abss);
   fprintf(stderr,"callback cnt=%d intl=%d\n",cnt,intl);
   void *vgp = q.allocMem(sizeof(generalized_memory_t));
   memcpy( vgp, &(task->mem), sizeof(generalized_memory_t) );

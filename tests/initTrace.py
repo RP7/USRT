@@ -47,9 +47,16 @@ def configHelloU():
   cmd.append("libHelloU.so")
   sub.Popen(cmd)
 
+def configCallBack():
+  cmd = configSet( "SetCap" )
+  cmd.append("-c")
+  cmd.append("libCallBackLunchTask.so")
+  sub.Popen(cmd)
+
 configDef()
 configHello()
 configHelloV()
 configHelloU()
+configCallBack()
 configSetQueue("queue0")
 configStart(4)

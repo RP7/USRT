@@ -15,7 +15,9 @@ int FUNCLASS::run( void *argv ) {
   _trace_t * trace = (_trace_t *) argv;
   trace->end = __getNow();
   trace->tid = (long int)syscall(__NR_gettid);
-  pushOffLog(TRACELOG,trace->off);
+  _trace_t *back = dupTrace(trace);
+  trace->lunch = __getNow();
+  pushOffLog(TRACELOG,back->off);
   return 0;
 }
 

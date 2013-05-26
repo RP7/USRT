@@ -28,6 +28,14 @@ static _trace_t *newTrace()
   return aLog; 
 }
 
+static _trace_t *dupTrace(_trace_t *a)
+{
+  _trace_t *aLog =(_trace_t *)allocLog(TRACELOG,sizeof(_trace_t));
+  memcpy(aLog,a,sizeof(_trace_t));
+  aLog->off=L2GLog(TRACELOG,(void*)aLog);
+  return aLog; 
+}
+
 static void *allocWithTrace(long long int len)
 {
   _trace_t *aLog = (_trace_t *)allocLog(TRACELOG,len);
@@ -39,7 +47,7 @@ static void *allocWithTrace(long long int len)
 
 static void dumpTrace( FILE *fp, _trace_t *t )
 {
-  fprintf(fp,"%24lld | ",t->end);
+  fprintf(fp,"%24lld(%lld) | ",t->end,t->delay);
   fprintf(fp,"d(%ld):%+10lld ",t->tid,t->end-t->lunch-t->delay);
   fprintf(fp,"k(%ld):%+10lld ",t->keeper,t->pop-t->lunch);
   fprintf(fp,"u(%ld):(w:%+10lld r:%+10lld) "

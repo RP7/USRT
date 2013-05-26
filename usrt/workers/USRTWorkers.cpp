@@ -186,6 +186,7 @@ namespace std {
           if( t->callback ) {
             bearer = my->workers->getBearerByKey(t->callback);
             if( bearer != NULL ) {
+              my->monitor.callback++;
               t->callbackargv.pQ = my->workers->tQueue();
               bearer->runLP( t );
             }
