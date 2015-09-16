@@ -50,7 +50,7 @@ int main(int argc, char*argv[] )
       }
       else
       {
-        printf(" OCM send buf overflow\n");
+        printf(" OCM send buf overflow,%d,%d,%d\n",free-last_send, free, last_send);
       }
       last_send = free;
 

@@ -25,5 +25,6 @@ class Q7Mem : public CPBuffer {
     ~Q7Mem();
     void start();
     int64 getKey();
+    void *getBuf(long long from, int len){ head->_off = from+len; return CPBuffer::getBuf(from,len);};
 };
 #endif // __Q7_Mem_H
