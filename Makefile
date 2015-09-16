@@ -149,7 +149,8 @@ UTILS = work/configWorkers \
   work/dumpTrace \
   work/delayTrace
 
-  
+Q7OCMUDP300 = work/initQ7Mem work/dumpQ7Mem work/Q7UDP #work/rx_udp work/tx_udp
+
 
 worker:$(WorkersInternalLibs) $(UTILS)
 
@@ -158,4 +159,16 @@ clean:
 	rm work/* -f
 	python scripts/prepare.py work
 
-		
+work/libQ7.so: ${USRTSRC} work/libmd5api.so Q7OCMUDP300/Q7Mem.cpp Q7OCMUDP300/Q7MemAPI.cpp
+	g++ -I${INC} ${FLAG} -shared -o work/libQ7.so Q7OCMUDP300/Q7Mem.cpp Q7OCMUDP300/Q7MemAPI.cpp ${USRTSRC} work/libmd5api.so $(LDFLAG)
+
+work/initQ7Mem : Q7OCMUDP300/initMem.cpp work/libQ7.so work/libmd5api.so
+	g++ -I${INC} ${FLAG} -o work/initQ7Mem Q7OCMUDP300/initMem.cpp work/libQ7.so work/libmd5api.so $(LDFLAG)
+
+work/dumpQ7Mem : Q7OCMUDP300/dumpMem.cpp work/libQ7.so work/libmd5api.so
+	g++ -I${INC} ${FLAG} -o work/dumpQ7Mem Q7OCMUDP300/initMem.cpp work/libQ7.so work/libmd5api.so $(LDFLAG)
+
+work/Q7UDP :  Q7OCMUDP300/Q7UDP.cpp work/libQ7.so work/libmd5api.so
+	g++ -I${INC} ${FLAG} -o work/Q7UDP Q7OCMUDP300/Q7UDP.cpp work/libQ7.so work/libmd5api.so $(LDFLAG)
+	
+			
