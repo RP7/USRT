@@ -166,9 +166,11 @@ work/initQ7Mem : Q7OCMUDP300/initMem.cpp work/libQ7.so work/libmd5api.so
 	g++ -I${INC} ${FLAG} -o work/initQ7Mem Q7OCMUDP300/initMem.cpp work/libQ7.so work/libmd5api.so $(LDFLAG)
 
 work/dumpQ7Mem : Q7OCMUDP300/dumpMem.cpp work/libQ7.so work/libmd5api.so
-	g++ -I${INC} ${FLAG} -o work/dumpQ7Mem Q7OCMUDP300/initMem.cpp work/libQ7.so work/libmd5api.so $(LDFLAG)
+	g++ -I${INC} ${FLAG} -o work/dumpQ7Mem Q7OCMUDP300/dumpMem.cpp work/libQ7.so work/libmd5api.so $(LDFLAG)
 
 work/Q7UDP :  Q7OCMUDP300/Q7UDP.cpp work/libQ7.so work/libmd5api.so
 	g++ -I${INC} ${FLAG} -o work/Q7UDP Q7OCMUDP300/Q7UDP.cpp work/libQ7.so work/libmd5api.so $(LDFLAG)
 	
+Q7 : $(Q7OCMUDP300)
+
 			

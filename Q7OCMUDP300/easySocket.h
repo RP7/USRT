@@ -57,8 +57,10 @@ class udpClient {
 				, buf
 				, len
 				, 0
-				, (struct sockaddr *)&servaddr
-				, (socklen_t*)&len );
+				, 0
+				, 0 );
+//				, (struct sockaddr *)&servaddr
+//				, (socklen_t*)&len );
 		};
 };
 

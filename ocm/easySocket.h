@@ -105,7 +105,7 @@ class udpServer
 					);
 			}
 		};
-		int recv( char *buf, int len )
+		int recvFrom( char *buf, int len )
 		{
 			return recvfrom( sockfd
 				, buf
@@ -113,6 +113,15 @@ class udpServer
 				, 0
 				, (struct sockaddr *)&(peer.servaddr)
 				, (socklen_t*)&(peer.len) );
+		};
+		int recv( char *buf, int len )
+		{
+			return recvfrom( sockfd
+				, buf
+				, len
+				, 0
+				, (struct sockaddr *)&(servaddr)
+				, (socklen_t*)&(addr_len) );
 		};
 		int reportPeerIP()
 		{

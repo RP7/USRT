@@ -19,6 +19,7 @@ void Q7Mem::attach( const char *n )
 
 void Q7Mem::newQ7Mem( const char *n, long long dataL, long long cpL, long long resL )
 {
+  printf("init new mem size:%ld cp:%ld\n",dataL, cpL );
   newCPBuffer( dataL
     , cpL
     , resL

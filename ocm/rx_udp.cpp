@@ -24,7 +24,8 @@ class rx:public udpServer
 		void write( int point)
 		{
 				
-				int len = recv( (char *)buf, 1216 );
+				int len = recvFrom( (char *)buf, 1216 );
+				//printf("len %d buf[0] %d buf[1] %d\n",len,buf[0],buf[1]);
 				if( buf[0]==0x7f7f7f7f )
 				{
 					if( len==1216 && buf[1]== 1200 )

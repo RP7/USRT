@@ -5,7 +5,7 @@ namespace std {
 
 extern "C" {
   
-  void initQ7Mem( const char *fileName, int blk=75, int cp=1 )
+  void initQ7Mem( const char *fileName, int blk, int cp )
   {
     Q7Mem *handle = new Q7Mem();
     handle->newQ7Mem( fileName
@@ -30,7 +30,7 @@ extern "C" {
   {
     *r = ( long long int )h->getOff();
   }
-  int write( Q7Mem *h, void *buf, int len, long long int off )
+  int Q7write( Q7Mem *h, void *buf, int len, long long int off )
   {
     void *p = (void *)h->getBuf( off, len );
     if( p!=NULL )
@@ -41,7 +41,7 @@ extern "C" {
     else
       return 0;
   }  
-  int read( Q7Mem *h, void *buf, int len, long long int off )
+  int Q7read( Q7Mem *h, void *buf, int len, long long int off )
   {
     void *p = (void *)h->getBuf( off, len );
     if( p!=NULL )
