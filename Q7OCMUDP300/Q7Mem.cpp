@@ -51,3 +51,4 @@ int64 Q7Mem::getKey()
 {
   return head->meta.key[0];
 }
+
